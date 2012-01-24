@@ -6,6 +6,7 @@ public class LineSegment implements Comparable<Object>{
 	public EndPoint start;
 	public EndPoint stopref;
 	public EndPoint currstop;
+	public String name="seg";
 	
 	@Override
 	public int compareTo(Object arg0) {

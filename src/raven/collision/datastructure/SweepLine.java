@@ -6,6 +6,7 @@ import raven.collision.EndPoint;
 import raven.collision.LineSegment;
 import raven.testing.DSNSLVisitorPrinter;
 import raven.testing.DepthVisitor;
+import raven.testing.TreeVisitor;
 
 public class SweepLine {
 	public DataStructureNode rootNode;
@@ -21,7 +22,7 @@ public class SweepLine {
 		list.add(n);
 		n.rootnode=seg;//assign this endpoints segment as the nodes comparable
 		if(rootNode==null){
-			System.out.println("added line segment to root node");
+			//System.out.println("added line segment to root node");
 			rootNode = n;
 		}else{
 			//rootNode.addNewLineSegment(n);//for add node function use segments start endpoint for comparision
@@ -194,7 +195,7 @@ public class SweepLine {
 					EndPoint segOrderedEP[] = MathFactory.getInstance().getSweepLineOrdered(seg);
 					//need to look left or right
 					int compRes = ptr.rootnode.compareTo(segOrderedEP[0]);
-					print("Compare performed "+compRes);
+					//print("Compare performed "+compRes);
 					if(compRes<0){//go right in data structure since segOrderedEP[0] is to right of this line segment
 						ptr=ptr.rightnode;
 					}else if(compRes>0){//go left
@@ -227,19 +228,50 @@ public class SweepLine {
 		
 	}
 	
+	public void resetVisited(){
+		for(int i=0;i<list.size();i++){ //takes n
+			list.get(i).visited=false;
+		}
+	}
+	
 	public void printEntireStructure(){
 		//get depth of structure
+		if(this.rootNode==null)
+			return;
+		this.resetVisited();
 		DepthVisitor dv = new DepthVisitor();
 		this.rootNode.accept(dv);
 		System.out.println("depth is "+dv.maxdepth);
 		
-		//print each level out
-		for(int i=0;i<dv.maxdepth;i++){
-			
+		this.resetVisited();
+		TreeVisitor tv = new TreeVisitor(dv.maxdepth);
+		this.rootNode.accept(tv);
+		
+		String array[] = tv.treearray;
+		int olddivisor=-1;
+		for(int i=0;i<array.length;i++){
+			if(i!=0){
+				//determine divisor length
+				int divisor =((int) (Math.log(i)/Math.log(2)) );
+				//System.out.print(i+": is at level div is "+divisor+" is divisor is "+(Math.pow(2, divisor)+1));
+				double length =  ( (Math.pow(2, dv.maxdepth))- Math.pow(2,divisor) ) / (Math.pow(2, divisor)+1) ;
+				//System.out.println("at "+i+" length div is "+length);
+				StringBuffer sb = new StringBuffer();
+				for(double j=0.0;j<length;j=j+0.07){
+					sb.append(" ");
+				}
+				if(olddivisor!=divisor){
+					System.out.println("");
+					olddivisor=divisor;
+				}
+				System.out.print(sb.toString());
+				System.out.print(array[i]);
+				
+			}
 		}
 	}
 	
 	private void print(String msg){
-		System.out.println(msg);
+		//System.out.println(msg);
 	}
 }

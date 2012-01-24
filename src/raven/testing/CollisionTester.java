@@ -70,8 +70,8 @@ public class CollisionTester {
 		 */
 		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
 		SweepLine sl = new SweepLine();
-		int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
-		
+		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
+		int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4   ,6,1,8,4  ,5,1,5,4  ,7,1,7,2 };
 		for(int i=0;i<segs.length/4;i++){
 			LineSegment seg1 = new LineSegment();
 			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
@@ -80,8 +80,13 @@ public class CollisionTester {
 			seg1.currstop=ep2;
 			sl.addLineSegment(seg1);
 			list.add(seg1);
+			seg1.name="seg"+i;
 		}
 		
+		sl.printEntireStructure();
+		
+		sl.removeLineSegment(list.get(1));
+		System.out.println("\nRemove node with both children");
 		sl.printEntireStructure();
 		/*sl.showDataStructure();
 		print("Now remove some segments and reshow");

@@ -10,7 +10,7 @@ public class MathFactory {
 	
 	public static MathFactory getInstance(){return factory;}
 	
-	public int crossproduct(LineSegment seg, EndPoint ep){
+	public double crossproduct(LineSegment seg, EndPoint ep){
 		/*
 		 * determine top point of line seg
 		 * shift end point by start point
@@ -22,7 +22,7 @@ public class MathFactory {
 		EndPoint segVectorEP=this.subtractEndPoints(ordered[1], ordered[0]);
 		EndPoint epVectorEP=this.subtractEndPoints(ep, ordered[0]);
 		
-		int crossprod=segVectorEP.x*epVectorEP.y-segVectorEP.y*epVectorEP.x;
+		double crossprod=segVectorEP.x*epVectorEP.y-segVectorEP.y*epVectorEP.x;
 		return crossprod;
 	}
 	

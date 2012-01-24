@@ -16,8 +16,8 @@ public class TreeVisitor implements Visitor{
 	}
 	@Override
 	public void visit(DataStructureNode dsn) {
-		int x = ((LineSegment)dsn.rootnode).start.x;
-		int y = ((LineSegment)dsn.rootnode).start.y;
+		int x = (int)((LineSegment)dsn.rootnode).start.x;
+		int y = (int)((LineSegment)dsn.rootnode).start.y;
 		treearray[index]="["+x+","+y+":"+((LineSegment)dsn.rootnode).name+"]";
 		
 		if(dsn.leftnode!=null && dsn.leftnode.visited==false){

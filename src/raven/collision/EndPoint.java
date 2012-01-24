@@ -1,13 +1,13 @@
 package raven.collision;
 
 public class EndPoint implements Comparable<Object>{
-	public int x=0;
-	public int y=0;
+	public double x=0;
+	public double y=0;
 	public LineSegment seg;
 	
 	public EndPoint(){}
 	
-	public EndPoint(int x,int y){
+	public EndPoint(double x,double y){
 		this.x=x;
 		this.y=y;
 	}

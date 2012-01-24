@@ -123,7 +123,7 @@ public class Collision implements MouseListener,Runnable{
 					    	this.angle=this.angle+0.01;
 					    	EndPoint ep = this.linesegments[i].stopref;
 					    	EndPoint ep2 = this.linesegments[i].currstop;
-					    	int[] shiftret = getNewShiftedCoords(ep.x, ep.y);
+					    	double[] shiftret = getNewShiftedCoords(ep.x, ep.y);
 					    	ep2.x=shiftret[0];
 					    	ep2.y=shiftret[1];
 					    	cd.solve(this.linesegments);
@@ -143,24 +143,24 @@ public class Collision implements MouseListener,Runnable{
 		}
 	}
 	
-	private int[] getNewShiftedCoords(int x, int y) {
+	private double[] getNewShiftedCoords(double x, double y) {
 		/*
 		 * Center is at 100,100 , find offset from center and determine angle and radius,
 		 * then change angle and recalculate x,y
 		 */
-		int xoffset = (x-100)*(-1);
-		int yoffset = y-100;
+		double xoffset = (x-100)*(-1);
+		double yoffset = y-100;
 		
 		//double hyp=Math.pow(Math.pow(xoffset, 2.0)+Math.pow(yoffset, 2.0), 0.5);
 		//double currangle=Math.atan( ((double)yoffset)/((double)xoffset) );
 	    //double vector=this.angle*Math.PI*2/360.0;
 	    //int newx=(int)(xoffset+hyp*Math.sin(vector));
 	    //int newy=(int)(xoffset+hyp*Math.cos(vector));
-		int newx=(int)(xoffset*Math.cos(this.angle)-yoffset*Math.sin(this.angle));
-		int newy=(int)(xoffset*Math.sin(this.angle)+yoffset*Math.cos(this.angle));
-	    int retx = (newx*(-1))+100;
-	    int rety = (newy)+100;
-	    int ret[] = {retx,rety};
+		double newx=(xoffset*Math.cos(this.angle)-yoffset*Math.sin(this.angle));
+		double newy=(xoffset*Math.sin(this.angle)+yoffset*Math.cos(this.angle));
+	    double retx = (newx*(-1))+100;
+	    double rety = (newy)+100;
+	    double ret[] = {retx,rety};
 		return ret;
 	}
 
@@ -174,10 +174,10 @@ public class Collision implements MouseListener,Runnable{
 		g.clearRect(0, 0, 200, 200);
 		//redraw all lines or as many as shown
 		for(int i=0;i<this.setSegments;i++){
-			int sx = this.linesegments[i].start.x;
-			int sy = this.linesegments[i].start.y;
-			int ex = this.linesegments[i].currstop.x;
-			int ey = this.linesegments[i].currstop.y;
+			int sx = (int)this.linesegments[i].start.x;
+			int sy = (int)this.linesegments[i].start.y;
+			int ex = (int)this.linesegments[i].currstop.x;
+			int ey = (int)this.linesegments[i].currstop.y;
 			g.setColor(Color.BLACK);
 			g.drawLine(sx, sy, ex, ey );
 			g.setColor(Color.RED);

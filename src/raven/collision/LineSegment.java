@@ -10,6 +10,6 @@ public class LineSegment implements Comparable<Object>{
 	
 	@Override
 	public int compareTo(Object arg0) {
-		return MathFactory.getInstance().crossproduct(this, (EndPoint)arg0);
+		return (int)MathFactory.getInstance().crossproduct(this, (EndPoint)arg0);
 	}
 }

@@ -3,6 +3,7 @@ package raven.testing;
 import java.util.LinkedList;
 import java.util.Random;
 
+import raven.collision.CollisionDetection;
 import raven.collision.EndPoint;
 import raven.collision.LineSegment;
 import raven.collision.datastructure.EndPointQueue;
@@ -60,7 +61,7 @@ public class CollisionTester {
 		seg.start = new EndPoint(1,2);
 		seg.currstop = new EndPoint(2,2);
 		EndPoint cmpPoint = new EndPoint(0,2);
-		int res = MathFactory.getInstance().crossproduct(seg, cmpPoint);
+		double res = MathFactory.getInstance().crossproduct(seg, cmpPoint);
 		System.out.println("Res "+res);
 	}
 	
@@ -118,10 +119,34 @@ public class CollisionTester {
 		sl.removeLineSegment(seg1);*/
 	}
 	
+	public void collisionTestCase(){
+		CollisionDetection cd = new CollisionDetection();
+		EndPoint ep1 = new EndPoint(1,0);
+		EndPoint ep2 = new EndPoint(4,2);
+		LineSegment seg1 = new LineSegment();
+		seg1.start=ep1;
+		seg1.stopref=ep2;
+		seg1.currstop=ep2;
+		
+		EndPoint ep1a = new EndPoint(4,1);
+		EndPoint ep2a = new EndPoint(2,3);
+		LineSegment seg2 = new LineSegment();
+		seg2.start=ep1a;
+		seg2.stopref=ep2a;
+		seg2.currstop=ep2a;
+		
+		LineSegment array[] = new LineSegment[2];
+		array[0]=seg1;
+		array[1]=seg2;
+		
+		cd.solve(array);
+	}
+	
 	public void runtestcases(){
 		//endPointQueueTestCase();
 		//mathFactoryTestCase();
-		sweepLineTestCase();
+		//sweepLineTestCase();
+		collisionTestCase();
 	}
 	
 	public static void main(String args[]){

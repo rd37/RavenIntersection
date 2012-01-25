@@ -8,8 +8,16 @@ import raven.testing.DSNVisitorPrinter;
 public class EndPointQueue {
 	public DataStructureNode rootNode;
 	public LinkedList<DataStructureNode> list = new LinkedList<DataStructureNode>();
+	public int queuecount=0;
+	
+	public void clear(){
+		rootNode=null;
+		queuecount=0;
+		list.clear();
+	}
 	
 	public void addEndPoint(EndPoint ep){
+		queuecount++;
 		DataStructureNode n = new DataStructureNode();
 		list.add(n);
 		n.rootnode=ep;
@@ -55,6 +63,7 @@ public class EndPointQueue {
 		if(this.rootNode==null){
 			return null;
 		}else{
+			queuecount--;
 			DataStructureNode tmp=rootNode;
 			DataStructureNode parent=rootNode;
 			while(tmp!=null){

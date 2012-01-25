@@ -14,13 +14,13 @@ public class EndPoint implements Comparable<Object>{
 	@Override
 	public int compareTo(Object ep1) {
 		EndPoint ep = (EndPoint)ep1;
-		if(x<ep.x){
-			return 1;
-		}else if(x>ep.x){
-			return -1;
-		}else if(y<ep.y){
+		if(y<ep.y){
 			return 1;
 		}else if(y>ep.y){
+			return -1;
+		}else if(x<ep.x){
+			return 1;
+		}else if(x>ep.x){
 			return -1;
 		}else{
 			return 0;

@@ -12,6 +12,10 @@ public class SweepLine {
 	public DataStructureNode rootNode;
 	public LinkedList<DataStructureNode> list = new LinkedList<DataStructureNode>();
 	
+	public void clear(){
+		rootNode=null;
+		list.clear();
+	}
 	/*
 	 * Will insert new segment into sweep line.
 	 * 
@@ -235,13 +239,15 @@ public class SweepLine {
 	}
 	
 	public void printEntireStructure(){
-		//get depth of structure
-		if(this.rootNode==null)
+		print("Show structure");
+		if(this.rootNode==null){
+			print("depth is zero");
 			return;
+		}
 		this.resetVisited();
 		DepthVisitor dv = new DepthVisitor();
 		this.rootNode.accept(dv);
-		System.out.println("depth is "+dv.maxdepth);
+		print("depth is "+dv.maxdepth);
 		
 		this.resetVisited();
 		TreeVisitor tv = new TreeVisitor(dv.maxdepth);
@@ -273,5 +279,109 @@ public class SweepLine {
 	
 	private void print(String msg){
 		//System.out.println(msg);
+	}
+	
+	public LineSegment getRightSegment(LineSegment seg) {
+		DataStructureNode ptr=this.rootNode;
+		DataStructureNode mostRightptr=null;
+		EndPoint segEP[] = MathFactory.getInstance().getSweepLineOrdered(seg);
+		boolean foundnode=false;
+		
+		while(ptr!=null){
+			if(ptr.rootnode==seg){
+				//System.out.println("Found the segment");
+				//found node now do left check use mostRightptr may still be null
+				foundnode=true;
+				//check right, if null then done, if not null, set ptr to right and then lefts for ever
+				if(ptr.rightnode!=null){
+					ptr=ptr.rightnode;
+					while(ptr!=null){
+						if(mostRightptr!=null){
+							//compare smallest values
+							double curr=MathFactory.getInstance().crossproduct((LineSegment)mostRightptr.rootnode, segEP[0]);
+							double comp=MathFactory.getInstance().crossproduct((LineSegment)ptr.rootnode, segEP[0]);
+							System.out.println("********Comparision is curr "+curr+" compared to "+comp);
+							if(comp<curr){
+								mostRightptr=ptr;
+							}
+							ptr=ptr.leftnode;
+						}else{
+							mostRightptr=ptr;
+							ptr=ptr.leftnode;
+						}
+					}
+				}else{
+					//System.out.println("Found the segment, but no left tree so done");
+				}
+				ptr=null;
+			}else{//search for seg
+				int compRes = ptr.rootnode.compareTo(segEP[0]);
+				//print("Compare performed "+compRes);
+				if(compRes<0){//go right in data structure since newEP[0] is to right of this line segment
+					ptr=ptr.rightnode;
+				}else if(compRes>0){
+					mostRightptr=ptr;
+					ptr=ptr.leftnode;
+				}else{
+					ptr=ptr.rightnode;
+				}
+				
+			}
+		}
+		if(mostRightptr==null || foundnode==false)
+			return null;
+		return (LineSegment)mostRightptr.rootnode;
+	}
+	
+	public LineSegment getLeftSegment(LineSegment seg) {
+		DataStructureNode ptr=this.rootNode;
+		DataStructureNode mostLeftptr=null;
+		EndPoint segEP[] = MathFactory.getInstance().getSweepLineOrdered(seg);
+		boolean foundnode=false;
+		
+		while(ptr!=null){
+			if(ptr.rootnode==seg){
+				//System.out.println("Found the segment");
+				//found node now do left check use mostLeftptr may still be null
+				foundnode=true;
+				//check left, if null then done, if not null, set ptr to left and then rights for ever
+				if(ptr.leftnode!=null){
+					ptr=ptr.leftnode;
+					while(ptr!=null){
+						if(mostLeftptr!=null){
+							//compare smallest values
+							double curr=MathFactory.getInstance().crossproduct((LineSegment)mostLeftptr.rootnode, segEP[0]);
+							double comp=MathFactory.getInstance().crossproduct((LineSegment)ptr.rootnode, segEP[0]);
+							//System.out.println("Comparision is curr "+curr+" compared to "+comp);
+							if(comp<curr){
+								mostLeftptr=ptr;
+							}
+							ptr=ptr.rightnode;
+						}else{
+							mostLeftptr=ptr;
+							ptr=ptr.rightnode;
+						}
+					}
+				}else{
+					//System.out.println("Found the segment, but no left tree so done");
+				}
+				ptr=null;
+			}else{//search for seg
+				int compRes = ptr.rootnode.compareTo(segEP[0]);
+				//print("Compare performed "+compRes);
+				if(compRes<0){//go right in data structure since newEP[0] is to right of this line segment
+					mostLeftptr=ptr;
+					ptr=ptr.rightnode;
+				}else if(compRes>0){
+					ptr=ptr.leftnode;
+				}else{
+					ptr=ptr.rightnode;
+				}
+				
+			}
+		}
+		if(mostLeftptr==null || foundnode==false)
+			return null;
+		return (LineSegment)mostLeftptr.rootnode;
 	}
 }

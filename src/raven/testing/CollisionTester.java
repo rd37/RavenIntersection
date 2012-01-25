@@ -121,32 +121,38 @@ public class CollisionTester {
 	
 	public void collisionTestCase(){
 		CollisionDetection cd = new CollisionDetection();
-		EndPoint ep1 = new EndPoint(1,0);
-		EndPoint ep2 = new EndPoint(4,2);
-		LineSegment seg1 = new LineSegment();
-		seg1.start=ep1;
-		seg1.stopref=ep2;
-		seg1.currstop=ep2;
 		
-		EndPoint ep1a = new EndPoint(4,1);
-		EndPoint ep2a = new EndPoint(2,3);
-		LineSegment seg2 = new LineSegment();
-		seg2.start=ep1a;
-		seg2.stopref=ep2a;
-		seg2.currstop=ep2a;
-		
-		LineSegment array[] = new LineSegment[2];
-		array[0]=seg1;
-		array[1]=seg2;
-		
+		//int ypts[] = {100,80,89,85,95,98,92,90,91};
+		//int ypts[] = {100,80,89,85,95};
+		//int yptsy[] = {0,0,0,10,10};
+		int ypts[] = {30,45,60,55,20,35};
+		int yptsy[] = {0,20,0,23,26,29};
+		int ypts2[] = {60,45,30,55,20,35};
+		int yptsy2[] = {30,30,30,30,30,30};
+		LineSegment array[] = new LineSegment[ypts.length];
+		for(int i=0;i<ypts.length;i++){
+			EndPoint ep1 = new EndPoint(ypts[i],yptsy[i]);
+			EndPoint ep2 = new EndPoint(ypts2[i],yptsy2[i]);
+			LineSegment seg1 = new LineSegment();
+			ep1.seg=seg1;ep2.seg=seg1;
+			seg1.start=ep1;
+			seg1.stopref=ep2;
+			seg1.currstop=ep2;
+			array[i]=seg1;
+		}
 		cd.solve(array);
+	}
+	
+	public void intersectionTestCase(){
+		//Lin
 	}
 	
 	public void runtestcases(){
 		//endPointQueueTestCase();
 		//mathFactoryTestCase();
 		//sweepLineTestCase();
-		collisionTestCase();
+		//collisionTestCase();
+		intersectionTestCase();
 	}
 	
 	public static void main(String args[]){

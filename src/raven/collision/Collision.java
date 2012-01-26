@@ -91,17 +91,17 @@ public class Collision implements MouseListener,Runnable{
 			linesegments[i].start.seg=linesegments[i];
 			linesegments[i].name="seg"+i;
 			if(i==0){
-				linesegments[i].start.x=0;
-				linesegments[i].start.y=0;
+				linesegments[i].start.x=0.01;
+				linesegments[i].start.y=0.01;
 			}else if(i==1){
-				linesegments[i].start.x=200;
-				linesegments[i].start.y=0;
+				linesegments[i].start.x=199.99;
+				linesegments[i].start.y=0.02;
 			}else if(i==2){
-				linesegments[i].start.x=200;
-				linesegments[i].start.y=200;
+				linesegments[i].start.x=199.98;
+				linesegments[i].start.y=199.6;
 			}else if(i==3){
-				linesegments[i].start.x=0;
-				linesegments[i].start.y=200;
+				linesegments[i].start.x=0.02;
+				linesegments[i].start.y=199.97;
 			}
 		}
 		Thread thisThread = new Thread(this);
@@ -111,31 +111,31 @@ public class Collision implements MouseListener,Runnable{
 	public void run(){
 		while(true){
 			try{
-				Thread.sleep(100);
+				Thread.sleep(600);
 				switch(state){
 					case (0):
-						print("add pick off arms and start demo");
+						//print("add pick off arms and start demo");
 					    break;
 					case (1):
-						print("in state waiting to start demo");
+						//print("in state waiting to start demo");
 					    break;
 					case (2):
-						print("simulation is running");
+						//print("simulation is running");
 					    //update endpoints then update canvas
 					    for(int i=0;i<this.setSegments;i++){
-					    	this.angle=this.angle+0.01;
+					    	this.angle=this.angle+0.02;
 					    	EndPoint ep = this.linesegments[i].stopref;
 					    	EndPoint ep2 = this.linesegments[i].currstop;
 					    	double[] shiftret = getNewShiftedCoords(ep.x, ep.y);
 					    	ep2.x=shiftret[0];
 					    	ep2.y=shiftret[1];
 					    	cd.clear();
-					    	cd.solve(this.linesegments);
+					    	cd.solve2(this.linesegments);
 					    	this.updateCanvas();
 					    }
 					    break;
 					case (3):
-						print("attemp simulation reset");
+						//print("attemp simulation reset");
 					    Collision.state=0;
 					    this.setSegments=0;
 					    this.angle=0;

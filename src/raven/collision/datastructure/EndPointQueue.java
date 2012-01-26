@@ -2,6 +2,7 @@ package raven.collision.datastructure;
 
 import java.util.LinkedList;
 
+import raven.collision.CollisionPoint;
 import raven.collision.EndPoint;
 import raven.testing.DSNVisitorPrinter;
 
@@ -45,7 +46,17 @@ public class EndPointQueue {
 						ptr=ptr.leftnode;
 					}
 				}else{//these two endpoints are the same
-					System.err.println("Two end points are the same");
+					System.out.println("Two end points are the same check if previously added collision point");
+					if(n.rootnode instanceof raven.collision.CollisionPoint){
+						if(ptr.rootnode instanceof raven.collision.CollisionPoint){
+							if( ((CollisionPoint)n.rootnode).x==((CollisionPoint)ptr.rootnode).x && ((CollisionPoint)n.rootnode).y==((CollisionPoint)ptr.rootnode).y ){
+								System.out.println("Collision Point Previously added using "+((CollisionPoint)n.rootnode).x+","+((CollisionPoint)n.rootnode).y);
+								ptr=null;
+								this.queuecount--;
+								return;
+							}
+						}
+					}
 					if(ptr.rightnode==null){
 						n.parentnode=ptr;
 						ptr.rightnode=n;
@@ -61,6 +72,7 @@ public class EndPointQueue {
 	
 	public EndPoint pop(){
 		if(this.rootNode==null){
+			queuecount=0;
 			return null;
 		}else{
 			queuecount--;

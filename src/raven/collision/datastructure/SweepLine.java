@@ -78,7 +78,7 @@ public class SweepLine {
 	 * 
 	 * new neighbors need to be checked for collision
 	 */
-	public void removeLineSegment(LineSegment seg){
+	public boolean removeLineSegment(LineSegment seg,EndPoint cmpEP[],boolean goRight){
 		if(rootNode!=null){
 			//rootNode.removeLineSegment(seg);
 			DataStructureNode ptr = rootNode;
@@ -197,7 +197,12 @@ public class SweepLine {
 					}
 					ptr=null;
 				}else{
-					EndPoint segOrderedEP[] = MathFactory.getInstance().getSweepLineOrdered(seg);
+					EndPoint segOrderedEP[];
+					if(cmpEP==null){
+						segOrderedEP= MathFactory.getInstance().getSweepLineOrdered(seg);
+					}else{
+						segOrderedEP = cmpEP;
+					}
 					//need to look left or right
 					int compRes = ptr.rootnode.compareTo(segOrderedEP[0]);
 					//print("Compare performed "+compRes);
@@ -206,16 +211,30 @@ public class SweepLine {
 					}else if(compRes>0){//go left
 						ptr=ptr.leftnode;
 					}else{//just look to right
-						ptr=ptr.rightnode;
+						if(goRight)
+							ptr=ptr.rightnode;
+						else
+							ptr=ptr.leftnode;
 					}
 					if(ptr==null){
-						print("unable to find segment");
+						//System.out.println("****************");
+						//System.out.println("remove line segment unable to find segment "+seg.name+" strt:"+seg.start.x+","+seg.start.y);
+						//.printEntireStructure();
+						if(cmpEP!=null){
+							//System.out.println("cmpEP compare is "+cmpEP[0].x+","+cmpEP[0].y);
+						}else{
+							//System.out.println("cmpEP is null");
+						}
+						//System.out.println("****************");
+						return false;
 					}
 				}//end else
 			}
 		}else{
 			System.err.println("No segments in data structure");
+			return false;
 		}
+		return true;
 	}
 	
 	public void updateLineSegments(CollisionPoint collisionEP){
@@ -223,14 +242,36 @@ public class SweepLine {
 		LineSegment seg1=collisionEP.seg1;
 		LineSegment seg2=collisionEP.seg2;
 		//LineSegment seg1Left = this.getLeftSegment(seg1);
-		LineSegment seg1Right = this.getRightSegment(seg1);
+		LineSegment seg1Right = this.getRightSegment(seg1,null);
 		
+		EndPoint array[] = new EndPoint[1];
+		array[0]=collisionEP;
 		if(seg1Right==seg2){ //then seg2 to to right of seg1 and seg1 is to left of seg2
 			/*
 			 * seg 2 is to right of seg1 currently so re-add seg2 first, then add seg 1 second
 			 */
 			//remove both seg1 and seg2
-			this.removeLineSegment(seg1);this.removeLineSegment(seg2);
+			
+			boolean success = this.removeLineSegment(seg1,array,true);
+			if(!success){
+				System.out.println("Unable to remove "+seg1.name);
+				System.out.println("Try other way ");
+				boolean success2 = this.removeLineSegment(seg1,array,false);
+				if(!success2)
+					System.out.println("***serious error removing line*****"+seg1.name);
+				else
+					System.out.println("It worked");
+			}
+			success = this.removeLineSegment(seg2,array,true);
+			if(!success){
+				System.out.println("Unable to remove "+seg2.name);
+				System.out.println("Try other way ");
+				boolean success2 = this.removeLineSegment(seg2,array,false);
+				if(!success2)
+					System.out.println("***serious error removing line*****"+seg2.name);
+				else
+					System.out.println("It worked");
+			}
 			
 			//set seg2 uppter point to collision EP but save old EP x,y and readd to sweepline
 			EndPoint[] seg2Ordered = MathFactory.getInstance().getSweepLineOrdered(seg2);
@@ -256,7 +297,26 @@ public class SweepLine {
 			 * seg 1 is to right of seg2 currently so re-add seg1 first, then add seg 2 second
 			 */
 			//remove both seg1 and seg2
-			this.removeLineSegment(seg1);this.removeLineSegment(seg2);
+			boolean success = this.removeLineSegment(seg1,array,true);
+			if(!success){
+				System.out.println("Unable to remove "+seg1.name);
+				System.out.println("Try other way ");
+				boolean success2 = this.removeLineSegment(seg1,array,false);
+				if(!success2)
+					System.out.println("***serious error removing line*****"+seg1.name);
+				else
+					System.out.println("It worked");
+			}
+			success = this.removeLineSegment(seg2,array,true);
+			if(!success){
+				System.out.println("Unable to remove "+seg2.name);
+				System.out.println("Try other way ");
+				boolean success2 = this.removeLineSegment(seg2,array,false);
+				if(!success2)
+					System.out.println("***serious error removing line from SL class*****"+seg2.name);
+				else
+					System.out.println("It worked");
+			}
 			
 			//do  seg1 first
 			EndPoint[] seg1Ordered = MathFactory.getInstance().getSweepLineOrdered(seg1);
@@ -350,10 +410,14 @@ public class SweepLine {
 		//System.out.println(msg);
 	}
 	
-	public LineSegment getRightSegment(LineSegment seg) {
+	public LineSegment getRightSegment(LineSegment seg,EndPoint cmpEP[]) {
 		DataStructureNode ptr=this.rootNode;
 		DataStructureNode mostRightptr=null;
-		EndPoint segEP[] = MathFactory.getInstance().getSweepLineOrdered(seg);
+		EndPoint segEP[];
+		if(cmpEP==null)
+		     segEP = MathFactory.getInstance().getSweepLineOrdered(seg);
+		else
+			 segEP=cmpEP;
 		boolean foundnode=false;
 		
 		while(ptr!=null){
@@ -369,7 +433,7 @@ public class SweepLine {
 							//compare smallest values
 							double curr=MathFactory.getInstance().crossproduct((LineSegment)mostRightptr.rootnode, segEP[0]);
 							double comp=MathFactory.getInstance().crossproduct((LineSegment)ptr.rootnode, segEP[0]);
-							System.out.println("********Comparision is curr "+curr+" compared to "+comp);
+							//System.out.println("******** Get Right Comparision is curr "+curr+" compared to "+comp);
 							if(comp<curr){
 								mostRightptr=ptr;
 							}
@@ -403,26 +467,25 @@ public class SweepLine {
 		//return mostRightptr;
 	}
 	
-	public LineSegment getLeftSegment(LineSegment seg) {
+	public LineSegment getLeftSegment(LineSegment seg,EndPoint cmpEP[]) {
 		DataStructureNode ptr=this.rootNode;
 		DataStructureNode mostLeftptr=null;
-		EndPoint segEP[] = MathFactory.getInstance().getSweepLineOrdered(seg);
+		EndPoint segEP[];
+		if(cmpEP==null)
+		     segEP = MathFactory.getInstance().getSweepLineOrdered(seg);
+		else
+			 segEP=cmpEP;
 		boolean foundnode=false;
 		
 		while(ptr!=null){
 			if(ptr.rootnode==seg){
-				//System.out.println("Found the segment");
-				//found node now do left check use mostLeftptr may still be null
 				foundnode=true;
-				//check left, if null then done, if not null, set ptr to left and then rights for ever
 				if(ptr.leftnode!=null){
 					ptr=ptr.leftnode;
 					while(ptr!=null){
 						if(mostLeftptr!=null){
-							//compare smallest values
 							double curr=MathFactory.getInstance().crossproduct((LineSegment)mostLeftptr.rootnode, segEP[0]);
 							double comp=MathFactory.getInstance().crossproduct((LineSegment)ptr.rootnode, segEP[0]);
-							//System.out.println("Comparision is curr "+curr+" compared to "+comp);
 							if(comp<curr){
 								mostLeftptr=ptr;
 							}
@@ -438,13 +501,16 @@ public class SweepLine {
 				ptr=null;
 			}else{//search for seg
 				int compRes = ptr.rootnode.compareTo(segEP[0]);
-				//print("Compare performed "+compRes);
+				//System.out.println("Left Compare performed result "+compRes+" comparing "+seg.name+" for left against "+((LineSegment)ptr.rootnode).name);
 				if(compRes<0){//go right in data structure since newEP[0] is to right of this line segment
+					//System.out.println("Go right SetLeftPointer for "+seg.name+" to "+((LineSegment)ptr.rootnode).name);
 					mostLeftptr=ptr;
 					ptr=ptr.rightnode;
 				}else if(compRes>0){
+					//System.out.println("Go left");
 					ptr=ptr.leftnode;
 				}else{
+					mostLeftptr=ptr;
 					ptr=ptr.rightnode;
 				}
 				

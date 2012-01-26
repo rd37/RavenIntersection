@@ -4,6 +4,7 @@ import raven.collision.datastructure.MathFactory;
 
 public class LineSegment implements Comparable<Object>{
 	public EndPoint start;
+	//public EndPoint collisionpoint=null;
 	public EndPoint stopref;
 	public EndPoint currstop;
 	public String name="seg";

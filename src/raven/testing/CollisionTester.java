@@ -72,13 +72,13 @@ public class CollisionTester {
 		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
 		SweepLine sl = new SweepLine();
 		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
-		int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4   ,6,1,8,4  ,5,1,5,4  ,7,1,7,2 };
+		int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,5   ,6,1,8,4  };
 		for(int i=0;i<segs.length/4;i++){
 			LineSegment seg1 = new LineSegment();
 			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
 			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
-			seg1.start=ep1;
-			seg1.currstop=ep2;
+			seg1.start=ep1;ep1.seg=seg1;
+			seg1.currstop=ep2;ep2.seg=seg1;
 			sl.addLineSegment(seg1);
 			list.add(seg1);
 			seg1.name="seg"+i;
@@ -86,59 +86,21 @@ public class CollisionTester {
 		
 		sl.printEntireStructure();
 		
-		sl.removeLineSegment(list.get(1));
-		System.out.println("\nRemove node with both children");
-		sl.printEntireStructure();
-		/*sl.showDataStructure();
-		print("Now remove some segments and reshow");
-		sl.removeLineSegment(list.get(4));
-		//print("Now show new structure");
-		//sl.showDataStructure();
-		//print("Now remove some segments and reshow");
-		sl.removeLineSegment(list.get(5));
-		//print("Now show new structure");
-		//sl.showDataStructure();
-		//print("Now remove some segments and reshow");
-		sl.removeLineSegment(list.get(0));
-		print("Now show new structure");
-		//sl.showDataStructure();
-		sl.removeLineSegment(list.get(2));
-		//sl.removeLineSegment(list.get(6));
-		sl.removeLineSegment(list.get(3));
-		sl.removeLineSegment(list.get(1));
 		
-		
-		sl.showDataStructure();
-		*/
-		
-		/*LineSegment seg1 = new LineSegment();
-		EndPoint ep1 = new EndPoint(1,1);
-		EndPoint ep2 = new EndPoint(6,6);
-		seg1.start=ep1;
-		seg1.currstop=ep2;
-		sl.removeLineSegment(seg1);*/
 	}
 	
-	public void collisionTestCase(){
+	private void collisionTestCase1(){
 		CollisionDetection cd = new CollisionDetection();
 		
-		//int ypts[] = {100,80,89,85,95,98,92,90,91};
-		//int ypts[] = {100,80,89,85,95};
-		//int yptsy[] = {0,0,0,10,10};
-		int yptsx[] = {2,4};
-		int yptsy[] = {1,1};
-		int yptsx2[] = {4,2};
-		int yptsy2[] = {3,3};
-		LineSegment array[] = new LineSegment[yptsx.length];
-		for(int i=0;i<yptsx.length;i++){
-			EndPoint ep1 = new EndPoint(yptsx[i],yptsy[i]);
-			EndPoint ep2 = new EndPoint(yptsx2[i],yptsy2[i]);
+		int segs[] = {1,1,4,4  ,6,1,3,4  ,4,2,6,5   ,2,5,1,6  };
+		LineSegment array[] = new LineSegment[segs.length/4];
+		for(int i=0;i<segs.length/4;i++){
 			LineSegment seg1 = new LineSegment();
-			ep1.seg=seg1;ep2.seg=seg1;
-			seg1.start=ep1;
-			seg1.stopref=ep2;
-			seg1.currstop=ep2;
-			seg1.name="Seg"+i;
+			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
+			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
+			seg1.start=ep1;ep1.seg=seg1;
+			seg1.currstop=ep2;ep2.seg=seg1;
+			seg1.name="seg"+i;
 			array[i]=seg1;
 		}
 		cd.solve(array);
@@ -147,7 +109,47 @@ public class CollisionTester {
 		}
 	}
 	
-	public void intersectionTestCase(){
+	private void collisionTestCase2(){
+		CollisionDetection cd = new CollisionDetection();
+		
+		int segs[] = {0,0,4,6  ,7,1,1,2  ,3,1,7,8   ,6,3,0,7  };
+		LineSegment array[] = new LineSegment[segs.length/4];
+		for(int i=0;i<segs.length/4;i++){
+			LineSegment seg1 = new LineSegment();
+			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
+			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
+			seg1.start=ep1;ep1.seg=seg1;
+			seg1.currstop=ep2;ep2.seg=seg1;
+			seg1.name="seg"+i;
+			array[i]=seg1;
+		}
+		cd.solve(array);
+		for(int i=0;i<cd.collisions.size();i++){
+			print("Collision at "+cd.collisions.get(i).toString());
+		}
+	}
+	
+	private void collisionTestCase3(){
+		CollisionDetection cd = new CollisionDetection();
+		
+		int segs[] = {4,0,11,7  ,14,0,5,9  ,3,5,8,10   ,9,1,0,10  };
+		LineSegment array[] = new LineSegment[segs.length/4];
+		for(int i=0;i<segs.length/4;i++){
+			LineSegment seg1 = new LineSegment();
+			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
+			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
+			seg1.start=ep1;ep1.seg=seg1;
+			seg1.currstop=ep2;ep2.seg=seg1;
+			seg1.name="seg"+i;
+			array[i]=seg1;
+		}
+		cd.solve(array);
+		for(int i=0;i<cd.collisions.size();i++){
+			print("Collision at "+cd.collisions.get(i).toString());
+		}
+	}
+	
+	private void intersectionTestCase(){
 		double yptsx[] = {6,9};
 		double yptsy[] = {1,1};
 		double yptsx2[] = {7,8};
@@ -172,7 +174,7 @@ public class CollisionTester {
 		//endPointQueueTestCase();
 		//mathFactoryTestCase();
 		//sweepLineTestCase();
-		collisionTestCase();
+		collisionTestCase3();
 		//intersectionTestCase();
 	}
 	

@@ -125,14 +125,37 @@ public class CollisionTester {
 		//int ypts[] = {100,80,89,85,95,98,92,90,91};
 		//int ypts[] = {100,80,89,85,95};
 		//int yptsy[] = {0,0,0,10,10};
-		int ypts[] = {30,45,60,55,20,35};
-		int yptsy[] = {0,20,0,23,26,29};
-		int ypts2[] = {60,45,30,55,20,35};
-		int yptsy2[] = {30,30,30,30,30,30};
-		LineSegment array[] = new LineSegment[ypts.length];
-		for(int i=0;i<ypts.length;i++){
-			EndPoint ep1 = new EndPoint(ypts[i],yptsy[i]);
-			EndPoint ep2 = new EndPoint(ypts2[i],yptsy2[i]);
+		int yptsx[] = {2,4};
+		int yptsy[] = {1,1};
+		int yptsx2[] = {4,2};
+		int yptsy2[] = {3,3};
+		LineSegment array[] = new LineSegment[yptsx.length];
+		for(int i=0;i<yptsx.length;i++){
+			EndPoint ep1 = new EndPoint(yptsx[i],yptsy[i]);
+			EndPoint ep2 = new EndPoint(yptsx2[i],yptsy2[i]);
+			LineSegment seg1 = new LineSegment();
+			ep1.seg=seg1;ep2.seg=seg1;
+			seg1.start=ep1;
+			seg1.stopref=ep2;
+			seg1.currstop=ep2;
+			seg1.name="Seg"+i;
+			array[i]=seg1;
+		}
+		cd.solve(array);
+		for(int i=0;i<cd.collisions.size();i++){
+			print("Collision at "+cd.collisions.get(i).toString());
+		}
+	}
+	
+	public void intersectionTestCase(){
+		double yptsx[] = {6,9};
+		double yptsy[] = {1,1};
+		double yptsx2[] = {7,8};
+		double yptsy2[] = {2,2};
+		LineSegment array[] = new LineSegment[yptsx.length];
+		for(int i=0;i<yptsx.length;i++){
+			EndPoint ep1 = new EndPoint(yptsx[i],yptsy[i]);
+			EndPoint ep2 = new EndPoint(yptsx2[i],yptsy2[i]);
 			LineSegment seg1 = new LineSegment();
 			ep1.seg=seg1;ep2.seg=seg1;
 			seg1.start=ep1;
@@ -140,19 +163,17 @@ public class CollisionTester {
 			seg1.currstop=ep2;
 			array[i]=seg1;
 		}
-		cd.solve(array);
-	}
-	
-	public void intersectionTestCase(){
-		//Lin
+		EndPoint collision = MathFactory.getInstance().getIntersection(array[0], array[1]);
+		if(collision!=null)
+			print("Collsion at "+collision.x+","+collision.y);
 	}
 	
 	public void runtestcases(){
 		//endPointQueueTestCase();
 		//mathFactoryTestCase();
 		//sweepLineTestCase();
-		//collisionTestCase();
-		intersectionTestCase();
+		collisionTestCase();
+		//intersectionTestCase();
 	}
 	
 	public static void main(String args[]){

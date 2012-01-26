@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.LinkedList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -87,6 +88,8 @@ public class Collision implements MouseListener,Runnable{
 		for(int i=0;i<this.linesegments.length;i++){
 			linesegments[i]=new LineSegment();
 			linesegments[i].start=new EndPoint();
+			linesegments[i].start.seg=linesegments[i];
+			linesegments[i].name="seg"+i;
 			if(i==0){
 				linesegments[i].start.x=0;
 				linesegments[i].start.y=0;
@@ -126,6 +129,7 @@ public class Collision implements MouseListener,Runnable{
 					    	double[] shiftret = getNewShiftedCoords(ep.x, ep.y);
 					    	ep2.x=shiftret[0];
 					    	ep2.y=shiftret[1];
+					    	cd.clear();
 					    	cd.solve(this.linesegments);
 					    	this.updateCanvas();
 					    }
@@ -183,6 +187,12 @@ public class Collision implements MouseListener,Runnable{
 			g.setColor(Color.RED);
 			g.drawOval(0, 0, 199, 199);
 		}
+		LinkedList<CollisionPoint> list=cd.collisions;
+		for(int i=0;i<list.size();i++){
+			CollisionPoint cp = list.get(i);
+			g.setColor(Color.red);
+			g.drawOval((int)cp.x-2, (int)cp.y-2, 5, 5);
+		}
 	}
 
 	@Override
@@ -198,6 +208,8 @@ public class Collision implements MouseListener,Runnable{
 			ep2.y=arg0.getY();
 			this.linesegments[this.setSegments].stopref=ep;
 			this.linesegments[this.setSegments].currstop=ep2;
+			ep.seg=this.linesegments[this.setSegments];
+			ep2.seg=this.linesegments[this.setSegments];
 			this.setSegments++;
 			if(setSegments==this.maxScreenSegments)
 				state=Collision.WAITINGTOSTARTSIM;

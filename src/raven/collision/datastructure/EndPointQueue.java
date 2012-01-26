@@ -22,7 +22,7 @@ public class EndPointQueue {
 		list.add(n);
 		n.rootnode=ep;
 		if(rootNode==null){
-			System.out.println("Set Root Node "+((EndPoint)n.rootnode).x+","+((EndPoint)n.rootnode).y);
+			//System.out.println("Set Root Node "+((EndPoint)n.rootnode).x+","+((EndPoint)n.rootnode).y);
 			rootNode = n;
 		}else{
 			//rootNode.addNode(n);

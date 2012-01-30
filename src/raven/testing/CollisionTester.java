@@ -4,14 +4,12 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import raven.collision.CollisionDetection;
-import raven.collision.CollisionDetection2;
 import raven.collision.CollisionPoint;
 import raven.collision.EndPoint;
 import raven.collision.LineSegment;
 import raven.collision.datastructure.EndPointQueue;
 import raven.collision.datastructure.MathFactory;
 import raven.collision.datastructure.SweepLine;
-import raven.collision.datastructure.SweepLine2;
 
 public class CollisionTester {
 	
@@ -73,7 +71,7 @@ public class CollisionTester {
 		 * create several segments, add to sweepline then print out with visitor
 		 */
 		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
-		SweepLine2 sl = new SweepLine2();
+		SweepLine sl = new SweepLine();
 		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
 		int segs[] = {2,0,3,4   ,5,0,7,4  ,8,0,6,4   ,4,0,8,4       };
 		for(int i=0;i<segs.length/4;i++){
@@ -113,7 +111,8 @@ public class CollisionTester {
 			seg1.name="seg"+i;
 			array[i]=seg1;
 		}
-		cd.solve(array);
+		cd.populateEventQ(array);
+		cd.solve();
 		for(int i=0;i<cd.collisions.size();i++){
 			print("Collision at "+cd.collisions.get(i).toString());
 		}
@@ -133,7 +132,8 @@ public class CollisionTester {
 			seg1.name="seg"+i;
 			array[i]=seg1;
 		}
-		cd.solve(array);
+		cd.populateEventQ(array);
+		cd.solve();
 		for(int i=0;i<cd.collisions.size();i++){
 			print("Collision at "+cd.collisions.get(i).toString());
 		}
@@ -153,7 +153,8 @@ public class CollisionTester {
 			seg1.name="seg"+i;
 			array[i]=seg1;
 		}
-		cd.solve(array);
+		cd.populateEventQ(array);
+		cd.solve();
 		for(int i=0;i<cd.collisions.size();i++){
 			print("Collision at "+cd.collisions.get(i).toString());
 		}
@@ -185,7 +186,7 @@ public class CollisionTester {
 		 * create several segments, add to sweepline then print out with visitor
 		 */
 		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
-		SweepLine2 sl = new SweepLine2();
+		SweepLine sl = new SweepLine();
 		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
 		int segs[] = {1,1,9,3   ,9,1,2,5        };
 		for(int i=0;i<segs.length/4;i++){
@@ -218,7 +219,7 @@ public class CollisionTester {
 		 * create several segments, add to sweepline then print out with visitor
 		 */
 		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
-		SweepLine2 sl = new SweepLine2();
+		SweepLine sl = new SweepLine();
 		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
 		int segs[] = { 1,1,1,3   ,2,1,4,3  ,4,1,2,3   ,5,1,5,3 };
 		for(int i=0;i<segs.length/4;i++){
@@ -244,7 +245,7 @@ public class CollisionTester {
 	}
 	
 	private void collisionTestCase4(){
-		CollisionDetection2 cd = new CollisionDetection2();
+		CollisionDetection cd = new CollisionDetection();
 		cd.clear();
 		
 		int segs[] = {0,1,3,4  ,2,1,2,2  ,3,1,3,2   ,4,1,2,4  };
@@ -288,7 +289,7 @@ public class CollisionTester {
 	}
 	
 	private void sweepLineTestCase4(){
-		CollisionDetection2 cd = new CollisionDetection2();
+		CollisionDetection cd = new CollisionDetection();
 		cd.clear();
 		
 		double segs[] = {1,1,6,5  ,6,1,1,4  ,1,2,6,7 ,6,2,1,7  };
@@ -316,7 +317,7 @@ public class CollisionTester {
 	}
 	
 	private void collisionTestCase5(){
-		CollisionDetection2 cd = new CollisionDetection2();
+		CollisionDetection cd = new CollisionDetection();
 		cd.clear();
 		
 		//int segs[] = {1,1,6,5  ,6,1,1,4  ,1,2,6,7   ,6,2,1,7  };

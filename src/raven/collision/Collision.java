@@ -32,7 +32,7 @@ public class Collision implements MouseListener,Runnable{
 	public static int WAITINGTOSTARTSIM=1;
 	public static int SIMULATIONRUNNING=2;
 	
-	private CollisionDetection2 cd = new CollisionDetection2();
+	private CollisionDetection cd = new CollisionDetection();
 	
 	public void init(){
 		mainFrame.getContentPane().setLayout(new BorderLayout());

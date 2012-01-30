@@ -5,386 +5,448 @@ import java.util.LinkedList;
 import raven.collision.CollisionPoint;
 import raven.collision.EndPoint;
 import raven.collision.LineSegment;
-import raven.testing.DSNSLVisitorPrinter;
 import raven.testing.DepthVisitor;
 import raven.testing.TreeVisitor;
 
 public class SweepLine {
-	public DataStructureNode rootNode;
-	public LinkedList<DataStructureNode> list = new LinkedList<DataStructureNode>();
+	public EndPoint sweepLinePosition=null;
+	public LineSegment rootSegment = null;
+	public LinkedList<LineSegment> list = new LinkedList<LineSegment>();
+	private double error=0.00000000001;
 	
 	public void clear(){
-		rootNode=null;
+		rootSegment=null;
 		list.clear();
-	}
-	/*
-	 * Will insert new segment into sweep line.
-	 * 
-	 * then a check for new collision with neighbors is required
-	 */
-	public void addLineSegment(LineSegment seg){ //
-		DataStructureNode n = new DataStructureNode();
-		list.add(n);
-		n.segnode=seg;//assign this endpoints segment as the nodes comparable
-		if(rootNode==null){
-			//System.out.println("added line segment to root node");
-			rootNode = n;
-		}else{
-			//rootNode.addNewLineSegment(n);//for add node function use segments start endpoint for comparision
-			//identify new nodes start endpoint. is in position 0
-			EndPoint newEP[] = MathFactory.getInstance().getSweepLineOrdered((LineSegment)n.segnode);
-			DataStructureNode ptr = rootNode;
-			while(ptr!=null){
-				//compare endpoint to this nodes line segment
-				double compRes = ptr.segnode.compareTo(newEP[0]);
-				print("Add Line Segment Compare performed "+compRes+" "+((LineSegment)ptr.segnode).name+" to "+((LineSegment)n.segnode).name);
-				if(compRes<0){//go right in data structure since newEP[0] is to right of this line segment
-					if(ptr.rightnode==null){
-						//print("added new line segment to right sub tree");
-						n.parentnode=ptr;
-						ptr.rightnode=n;
-						ptr=null;//to get out of while loop
-					}else{
-						//print("right sub tree node exists, add to sub node");
-						ptr=ptr.rightnode;
-					}
-				}else if(compRes>0){
-					if(ptr.leftnode==null){
-						//print("added new line segment to left sub tree");
-						n.parentnode=ptr;
-						ptr.leftnode=n;
-						ptr=null;//to get out of while loop
-					}else{
-						//print("left sub tree node exists, add to sub node");
-						ptr=ptr.leftnode;
-					}
-				}else{
-					//((LineSegment)n.segnode).start.x+=0.0001;
-					//System.err.println("start point is on line being compared, send to right in data structure");
-					if(ptr.rightnode==null){
-						n.parentnode=ptr;
-						ptr.rightnode=n;
-						ptr=null;
-					}else{
-						ptr=ptr.rightnode;
-					}
-				}	
-			}
-			
-		}
-	}
-	
-	/*
-	 * Will remove the segment. use lowest endpoint
-	 * 
-	 * new neighbors need to be checked for collision
-	 */
-	public boolean removeLineSegment(LineSegment seg,EndPoint cmpEP[],boolean goRight){
-		if(rootNode!=null){
-			//rootNode.removeLineSegment(seg);
-			DataStructureNode ptr = rootNode;
-			while(ptr!=null){
-				ptr.segnode=seg;
-				if(((LineSegment)ptr.segnode)==seg){
-					
-					//print("found segment to remove");
-					
-					if(ptr.leftnode==null){
-						if(ptr.rightnode==null){//easiest to solve both are null
-							
-							if(ptr.parentnode!=null){ //this node is not the root node
-								//print("node to remove has no children but is not root");
-								if(ptr.parentnode.leftnode==ptr){
-									ptr.parentnode.leftnode=null;
-									ptr.parentnode=null;
-								}else{
-									ptr.parentnode.rightnode=null;
-									ptr.parentnode=null;
-								}
-							}else{//remove the root node since no children, this is root node
-								//print("node to remove has no children and is root");
-								this.rootNode=null;
-							}
-						}else{//left is null, but right node is not null
-							//print("node to remove has a right  child");
-							if(ptr.parentnode==null){ //this is a root node
-								this.rootNode=ptr.rightnode;
-								ptr.rightnode.parentnode=null;
-							}else{
-								if(ptr.parentnode.leftnode==ptr){
-									ptr.parentnode.leftnode=ptr.rightnode;
-									ptr.rightnode.parentnode=ptr.parentnode;
-								}else{
-									ptr.parentnode.rightnode=ptr.rightnode;
-									ptr.rightnode.parentnode=ptr.parentnode;
-								}
-							}
-						}
-					}else{//you are here*****
-						if(ptr.rightnode==null){//left node is not null but right node is null
-							
-							if(ptr.parentnode==null){ //this is root node
-								//print("node to remove has a left child only, node to remove is root");
-								this.rootNode=ptr.leftnode;
-								ptr.leftnode.parentnode=null;
-							}else{
-								//print("node to remove has a left child only, node to remove is not root");
-								if(ptr.parentnode.leftnode==ptr){
-									ptr.parentnode.leftnode=ptr.leftnode;
-									ptr.leftnode.parentnode=ptr.parentnode;
-								}else{
-									ptr.parentnode.rightnode=ptr.leftnode;
-									ptr.leftnode.parentnode=ptr.parentnode;
-								}
-							}
-						}else{ //hardest case to handle node has two subtrees
-							//print("node to remove has both children");
-							if(ptr.parentnode==null){
-								//print("node to remove has both children and is root");
-								this.rootNode=ptr.rightnode;
-								ptr.rightnode.parentnode=null;
-								
-								DataStructureNode rightMost=ptr.leftnode;
-								DataStructureNode rightMostPtr=ptr.leftnode;
-								while(rightMostPtr!=null){
-									rightMost=rightMostPtr;
-									rightMostPtr=rightMostPtr.rightnode;
-								}
-								rightMost.rightnode=ptr.rightnode.leftnode;
-								if(ptr.rightnode.leftnode!=null)
-									ptr.rightnode.leftnode.parentnode=rightMost;
-								
-								ptr.rightnode.leftnode=ptr.leftnode;
-								if(ptr.leftnode!=null)
-									ptr.leftnode.parentnode=ptr.rightnode;
-							}else{
-								//print("node to remove has both children and is not root");
-								if(ptr.parentnode.leftnode==ptr){
-									ptr.parentnode.leftnode=ptr.rightnode;
-									ptr.rightnode.parentnode=ptr.parentnode;
-									
-									DataStructureNode rightMost=ptr.leftnode;
-									DataStructureNode rightMostPtr=ptr.leftnode;
-									while(rightMostPtr!=null){
-										rightMost=rightMostPtr;
-										rightMostPtr=rightMostPtr.rightnode;
-									}
-									rightMost.rightnode=ptr.rightnode.leftnode;
-									if(ptr.rightnode.leftnode!=null)
-										ptr.rightnode.leftnode.parentnode=rightMost;
-									
-									ptr.rightnode.leftnode=ptr.leftnode;
-									if(ptr.leftnode!=null)
-										ptr.leftnode.parentnode=ptr.rightnode;
-								}else{
-									ptr.parentnode.rightnode=ptr.rightnode;
-									ptr.rightnode.parentnode=ptr.parentnode;
-									
-									DataStructureNode rightMost=ptr.leftnode;
-									DataStructureNode rightMostPtr=ptr.leftnode;
-									while(rightMostPtr!=null){
-										rightMost=rightMostPtr;
-										rightMostPtr=rightMostPtr.rightnode;
-									}
-									rightMost.rightnode=ptr.rightnode.leftnode;
-									if(ptr.rightnode.leftnode!=null)
-										ptr.rightnode.leftnode.parentnode=rightMost;
-									
-									ptr.rightnode.leftnode=ptr.leftnode;
-									if(ptr.leftnode!=null)
-										ptr.leftnode.parentnode=ptr.rightnode;
-								}
-							}
-						}
-					}
-					ptr=null;
-				}else{
-					EndPoint segOrderedEP[];
-					if(cmpEP==null){
-						segOrderedEP= MathFactory.getInstance().getSweepLineOrdered(seg);
-					}else{
-						segOrderedEP = cmpEP;
-					}
-					//need to look left or right
-					double compRes = ptr.segnode.compareTo(segOrderedEP[0]);
-					//print("Compare performed "+compRes);
-					if(compRes<0){//go right in data structure since segOrderedEP[0] is to right of this line segment
-						ptr=ptr.rightnode;
-					}else if(compRes>0){//go left
-						ptr=ptr.leftnode;
-					}else{//just look to right
-						if(goRight)
-							ptr=ptr.rightnode;
-						else
-							ptr=ptr.leftnode;
-					}
-					if(ptr==null){
-						//System.out.println("****************");
-						//System.out.println("remove line segment unable to find segment "+seg.name+" strt:"+seg.start.x+","+seg.start.y);
-						//.printEntireStructure();
-						if(cmpEP!=null){
-							//System.out.println("cmpEP compare is "+cmpEP[0].x+","+cmpEP[0].y);
-						}else{
-							//System.out.println("cmpEP is null");
-						}
-						//System.out.println("****************");
-						return false;
-					}
-				}//end else
-			}
-		}else{
-			System.err.println("No segments in data structure");
-			return false;
-		}
-		return true;
-	}
-	
-	public void updateLineSegments(CollisionPoint collisionEP){
-		//find nodes for segments, then switch them
-		LineSegment seg1=collisionEP.seg1;
-		LineSegment seg2=collisionEP.seg2;
-		//LineSegment seg1Left = this.getLeftSegment(seg1);
-		LineSegment seg1Right = this.getRightSegment(seg1,null);
-		
-		EndPoint array[] = new EndPoint[1];
-		array[0]=collisionEP;
-		if(seg1Right==seg2){ //then seg2 to to right of seg1 and seg1 is to left of seg2
-			/*
-			 * seg 2 is to right of seg1 currently so re-add seg2 first, then add seg 1 second
-			 */
-			//remove both seg1 and seg2
-			
-			boolean success = this.removeLineSegment(seg1,array,true);
-			if(!success){
-				System.out.println("Unable to remove "+seg1.name);
-				System.out.println("Try other way ");
-				boolean success2 = this.removeLineSegment(seg1,array,false);
-				if(!success2)
-					System.out.println("***serious error removing line*****"+seg1.name);
-				else
-					System.out.println("It worked");
-			}
-			success = this.removeLineSegment(seg2,array,true);
-			if(!success){
-				System.out.println("Unable to remove "+seg2.name);
-				System.out.println("Try other way ");
-				boolean success2 = this.removeLineSegment(seg2,array,false);
-				if(!success2)
-					System.out.println("***serious error removing line*****"+seg2.name);
-				else
-					System.out.println("It worked");
-			}
-			
-			//set seg2 uppter point to collision EP but save old EP x,y and readd to sweepline
-			EndPoint[] seg2Ordered = MathFactory.getInstance().getSweepLineOrdered(seg2);
-			double tmpSegX2=seg2Ordered[0].x;
-			double tmpSegY2=seg2Ordered[0].y;
-			seg2Ordered[0].x = collisionEP.x;
-			seg2Ordered[0].y= collisionEP.y;
-			this.addLineSegment(seg2);
-			seg2Ordered[0].x = tmpSegX2;
-			seg2Ordered[0].y= tmpSegY2;
-			
-			//do same for seg1
-			EndPoint[] seg1Ordered = MathFactory.getInstance().getSweepLineOrdered(seg1);
-			double tmpSegX1=seg1Ordered[0].x;
-			double tmpSegY1=seg1Ordered[0].y;
-			seg1Ordered[0].x = collisionEP.x;
-			seg1Ordered[0].y= collisionEP.y;
-			this.addLineSegment(seg1);
-			seg1Ordered[0].x = tmpSegX1;
-			seg1Ordered[0].y= tmpSegY1;
-		}else{ //then seg1 is to right of seg2 and seg2 is to left of seg1
-			/*
-			 * seg 1 is to right of seg2 currently so re-add seg1 first, then add seg 2 second
-			 */
-			//remove both seg1 and seg2
-			boolean success = this.removeLineSegment(seg1,array,true);
-			if(!success){
-				System.out.println("Unable to remove "+seg1.name);
-				System.out.println("Try other way ");
-				boolean success2 = this.removeLineSegment(seg1,array,false);
-				if(!success2)
-					System.out.println("***serious error removing line*****"+seg1.name);
-				else
-					System.out.println("It worked");
-			}
-			success = this.removeLineSegment(seg2,array,true);
-			if(!success){
-				System.out.println("Unable to remove "+seg2.name);
-				System.out.println("Try other way ");
-				boolean success2 = this.removeLineSegment(seg2,array,false);
-				if(!success2)
-					System.out.println("***serious error removing line from SL class*****"+seg2.name);
-				else
-					System.out.println("It worked");
-			}
-			
-			//do  seg1 first
-			EndPoint[] seg1Ordered = MathFactory.getInstance().getSweepLineOrdered(seg1);
-			double tmpSegX1=seg1Ordered[0].x;
-			double tmpSegY1=seg1Ordered[0].y;
-			seg1Ordered[0].x = collisionEP.x;
-			seg1Ordered[0].y= collisionEP.y;
-			this.addLineSegment(seg1);
-			seg1Ordered[0].x = tmpSegX1;
-			seg1Ordered[0].y= tmpSegY1;
-			
-			//set seg2 uppter point to collision EP but save old EP x,y and readd to sweepline
-			EndPoint[] seg2Ordered = MathFactory.getInstance().getSweepLineOrdered(seg2);
-			double tmpSegX2=seg2Ordered[0].x;
-			double tmpSegY2=seg2Ordered[0].y;
-			seg2Ordered[0].x = collisionEP.x;
-			seg2Ordered[0].y= collisionEP.y;
-			this.addLineSegment(seg2);
-			seg2Ordered[0].x = tmpSegX2;
-			seg2Ordered[0].y= tmpSegY2;
-		}
-	}
-	
-	/*
-	 * need to fix this to be efficient
-	 */
-	/*public DataStructureNode findNode(LineSegment seg){
-		for(int i=0;i<list.size();i++){
-			if(list.get(i).rootnode==seg)
-				return list.get(i);
-		}
-		return null;
-	}*/
-	
-	public void showDataStructure(){
-		for(int i=0;i<list.size();i++){ //takes n
-			list.get(i).visited=false;
-		}
-		DSNSLVisitorPrinter dsnvp = new DSNSLVisitorPrinter();
-		if(rootNode!=null)
-			rootNode.accept(dsnvp);
-		
 	}
 	
 	public void resetVisited(){
+		//System.out.println("Reset the list "+list.size());
 		for(int i=0;i<list.size();i++){ //takes n
 			list.get(i).visited=false;
 		}
 	}
 	
+	public void addSegment(LineSegment seg,EndPoint cmpEP[]){
+		if(seg==null)
+			return;
+		//for testing
+		
+		EndPoint[] ordEP;
+		if(cmpEP!=null){
+			ordEP=cmpEP;
+			//System.out.println("Added seg "+seg.name+" using Coll Pt "+ordEP[0].x+","+ordEP[0].y);
+		}else
+			ordEP=MathFactory.getInstance().getSweepLineOrdered(seg);
+		
+		if(rootSegment==null){
+			sweepLinePosition=ordEP[0];
+			rootSegment=seg;
+			//print("Added First segment "+seg.name);
+			list.add(seg);
+			return;
+		}
+		if(ordEP[0].y<(sweepLinePosition.y-this.error)){
+			print("Sweep Line Violation ... ignore "+seg.name);
+	    	return;
+		}else
+			sweepLinePosition=ordEP[0];
+		
+		list.add(seg);
+		
+		
+		LineSegment ptr = rootSegment;
+		//print("add segment "+seg.name);
+		while(ptr!=null){
+			double compRes = ptr.compareTo(ordEP[0]);
+			//if(cmpEP!=null)
+				//System.out.println("CP compare is "+compRes+" between tree seg "+ptr.name+" and insert seg "+seg.name);
+			if(compRes<=0){//go right in data structure
+				if(ptr.rightSegment!=null){
+					ptr=ptr.rightSegment;
+				}else{
+					ptr.rightSegment=seg;
+					seg.parentSegment=ptr;
+					ptr=null;
+				}
+			}else{//go left in data Structure
+				if(ptr.leftSegment!=null){
+					ptr=ptr.leftSegment;
+				}else{
+					ptr.leftSegment=seg;
+					seg.parentSegment=ptr;
+					ptr=null;
+				}
+			}
+			
+		}
+	}
+	
+	public void removeSegment(LineSegment seg,EndPoint cmpEP[]){
+		if(rootSegment==null || seg == null)
+			return;
+		
+		list.remove(seg);
+		/*
+		 * Update Sweep Current Sweep Line Position
+		 */
+		EndPoint[] ordEP;
+		if(cmpEP!=null){
+			ordEP=cmpEP;
+		}else{
+			ordEP=MathFactory.getInstance().getSweepLineOrdered(seg);
+		}
+		
+		
+		if(ordEP[1].y<(sweepLinePosition.y-this.error)){
+			System.out.println("****This segment should have already been removed "+seg.name+" epY:"+ordEP[1].y+" sweepline y "+this.sweepLinePosition.y);
+	    	return;
+		}else
+			sweepLinePosition=ordEP[1];
+			
+		
+		/*
+		 * case 1 is both children are null
+		 */
+		if(seg.leftSegment==null && seg.rightSegment==null){
+			if(seg!=rootSegment){ //this node is not the root node
+				if(seg.parentSegment.leftSegment==seg){
+					seg.parentSegment.leftSegment=null;
+					seg.parentSegment=null;
+				}else{
+					seg.parentSegment.rightSegment=null;
+					seg.parentSegment=null;
+				}
+			}else{//remove the root node since no children, this is root node
+				this.rootSegment=null;
+			}
+			seg.rightSegment=null;seg.leftSegment=null;seg.parentSegment=null;
+			return;
+		}
+		
+		/*
+		 * case 2 left child is null and right is not null
+		 */
+		if(seg.leftSegment==null && seg.rightSegment!=null){//left is null, but right node is not null
+			if(seg==rootSegment){ //this is a root node
+				rootSegment=seg.rightSegment;
+				seg.rightSegment.parentSegment=null;
+			}else{
+				if(seg.parentSegment.leftSegment==seg){
+					seg.parentSegment.leftSegment=seg.rightSegment;
+					seg.rightSegment.parentSegment=seg.parentSegment;
+				}else{
+					seg.parentSegment.rightSegment=seg.rightSegment;
+					seg.rightSegment.parentSegment=seg.parentSegment;
+				}
+			}
+			seg.rightSegment=null;seg.leftSegment=null;seg.parentSegment=null;
+			return;
+		}
+		
+		/*
+		 * case 3 left child is not null and right is null
+		 */
+		if(seg.rightSegment==null && seg.leftSegment!=null){//left node is not null but right node is null
+			if(seg.parentSegment==null){ //this is root node
+				rootSegment=seg.leftSegment;
+				seg.leftSegment.parentSegment=null;
+			}else{
+				if(seg.parentSegment.leftSegment==seg){
+					seg.parentSegment.leftSegment=seg.leftSegment;
+					seg.leftSegment.parentSegment=seg.parentSegment;
+				}else{
+					seg.parentSegment.rightSegment=seg.leftSegment;
+					seg.leftSegment.parentSegment=seg.parentSegment;
+				}
+			}
+			seg.rightSegment=null;seg.leftSegment=null;seg.parentSegment=null;
+			return;
+		}
+		
+		/*
+		 * case 4 segment has both children
+		 */
+		if(seg.rightSegment!=null && seg.leftSegment!=null){
+			if(seg==rootSegment){ //seg is root and has both children
+				rootSegment=seg.rightSegment;
+				seg.rightSegment.parentSegment=null;
+				
+				LineSegment rightMost=seg.leftSegment;
+				LineSegment rightMostPtr=seg.leftSegment;
+				while(rightMostPtr!=null){
+					rightMost=rightMostPtr;
+					rightMostPtr=rightMostPtr.rightSegment;
+				}
+				rightMost.rightSegment=seg.rightSegment.leftSegment;
+				if(seg.rightSegment.leftSegment!=null)
+					seg.rightSegment.leftSegment.parentSegment=rightMost;
+				
+				seg.rightSegment.leftSegment=seg.leftSegment;
+				//if(seg.leftSegment!=null)
+					seg.leftSegment.parentSegment=seg.rightSegment;
+			}else{ //seg is not root and has both children
+				if(seg.parentSegment.leftSegment==seg){ //I'm on my parents left side
+					seg.parentSegment.leftSegment=seg.rightSegment;
+					seg.rightSegment.parentSegment=seg.parentSegment;
+					
+					LineSegment rightMost=seg.leftSegment;
+					LineSegment rightMostPtr=seg.leftSegment;
+					while(rightMostPtr!=null){
+						rightMost=rightMostPtr;
+						rightMostPtr=rightMostPtr.rightSegment;
+					}
+					rightMost.rightSegment=seg.rightSegment.leftSegment;
+					if(seg.rightSegment.leftSegment!=null)
+						seg.rightSegment.leftSegment.parentSegment=rightMost;
+					
+					seg.rightSegment.leftSegment=seg.leftSegment;
+					//if(seg.leftSegment!=null)
+						seg.leftSegment.parentSegment=seg.rightSegment;
+				}else{  //I'm on my parents right side
+					seg.parentSegment.rightSegment=seg.rightSegment;
+					seg.rightSegment.parentSegment=seg.parentSegment;
+					
+					LineSegment rightMost=seg.leftSegment;
+					LineSegment rightMostPtr=seg.leftSegment;
+					while(rightMostPtr!=null){
+						rightMost=rightMostPtr;
+						rightMostPtr=rightMostPtr.rightSegment;
+					}
+					rightMost.rightSegment=seg.rightSegment.leftSegment;
+					if(seg.rightSegment.leftSegment!=null)
+						seg.rightSegment.leftSegment.parentSegment=rightMost;
+					
+					seg.rightSegment.leftSegment=seg.leftSegment;
+					//if(seg.leftSegment!=null)
+						seg.leftSegment.parentSegment=seg.rightSegment;
+				}
+				
+			}
+			seg.rightSegment=null;seg.leftSegment=null;seg.parentSegment=null;
+			return;
+		}
+		seg.rightSegment=null;seg.leftSegment=null;seg.parentSegment=null;
+	}
+	
+	public LineSegment getLeftSegment(LineSegment seg){
+		if(seg==null)
+			return null;
+		
+		/*
+		 * First case where segment is root
+		 */
+		if(seg==rootSegment){
+			print("Get Left Segment First case "+seg.name);
+			return this.getMostLeftSegmentLower(seg);
+		}
+		
+		if(seg.parentSegment==null){
+			System.err.println("getLeftSegment: On Left Error seg has no parent, but is not root "+seg.name);
+			return null;
+		}
+		
+		/*
+		 * Second case where this segment is to right of parent so parent is smaller or to left 
+		 */
+		if(seg.parentSegment.rightSegment==seg){
+			print("Get Left Segment Second Case for seg "+seg.name+" which is smaller than parent");
+			LineSegment mostLeft = this.getMostLeftSegmentLower(seg);
+			if(mostLeft==null){
+				//return this.getMostLeftSegmentUpper(seg);
+				return seg.parentSegment;
+			}else
+				return mostLeft;
+		}
+		
+		/*
+		 * Third case where this segment is to left of parent so parent is larger or to right
+		 */
+		if(seg.parentSegment.leftSegment==seg){
+			print("Get Left Segment Third Case for seg "+seg.name+" which is larger than parent");
+			LineSegment mostLeft = this.getMostLeftSegmentLower(seg);
+			if(mostLeft==null){
+				//return seg.parentSegment;
+				return this.getMostLeftSegmentUpper(seg);
+			}else{
+				return mostLeft;
+			}
+			//return this.getMostLeftSegmentLower(seg);
+			
+			//return seg.leftSegment;
+		}
+		return null;
+	}
+	
+	/*
+	 * work up segements parents lefts until there is a right set ptrRet to the right if 
+	 * found
+	 */
+	private LineSegment getMostLeftSegmentUpper(LineSegment seg){
+		LineSegment ptr=seg.parentSegment;
+		LineSegment ptrRet=null;
+		while(ptr!=null){
+			if(ptr.parentSegment==null){
+				//print(seg.name+" Segment has no left child " );
+				ptr=null;
+			}else{
+				if(ptr.parentSegment.rightSegment==ptr){
+					ptrRet=ptr.parentSegment;
+					ptr=null;
+				}else{//then must be a left segemnt so go upward
+					ptr=ptr.parentSegment;
+				}
+			}
+		}
+		return ptrRet;
+	}
+	
+	private LineSegment getMostLeftSegmentLower(LineSegment seg){
+		LineSegment ptr=seg.leftSegment;
+		LineSegment ptrRet = seg.leftSegment;
+		while(ptr!=null){
+			ptrRet=ptr;
+			ptr=ptr.rightSegment;
+		}
+		return ptrRet;
+	}
+	
+	
+	public LineSegment getRightSegment(LineSegment seg){
+		if(seg==null)
+			return null;
+		
+		/*
+		 * First case where segment is root
+		 */
+		if(seg==rootSegment){
+			print("Get Right Segment First case "+seg.name);
+			return this.getMostRightSegmentLower(seg);
+		}
+		
+		if(seg.parentSegment==null){
+			System.err.println("getRightSegment: On Get Right Error seg has no parent, but is not root "+seg.name);
+			return null;
+		}
+		
+		/*
+		 * Second case where this segment is to right of parent so parent is smaller or to left 
+		 */
+		if(seg.parentSegment.rightSegment==seg){
+			print("Get Right Segment Second Case for seg "+seg.name+" which is larger than parent");
+			LineSegment mostRight = this.getMostRightSegmentLower(seg);
+			if(mostRight==null){
+				return this.getMostRightSegmentUpper(seg);
+				//return seg.parentSegment;
+			}else
+				return mostRight;
+				
+			//return this.getMostRightSegmentLower(seg);
+		}
+		
+		/*
+		 * Third case where this segment is to left of parent so parent is larger or to right
+		 */
+		if(seg.parentSegment.leftSegment==seg){
+			print("Get Right Segment Third Case for seg "+seg.name+" which is smaller than parent");
+			LineSegment mostRight = this.getMostRightSegmentLower(seg);
+			if(mostRight==null){
+				return seg.parentSegment;
+				//return this.getMostRightSegmentUpper(seg);
+			}else{
+				return mostRight;
+			}
+			//return seg.rightSegment;
+		}
+		
+		print("This should not happen, "+seg.name+" parent is "+seg.parentSegment.name);
+		return null;
+	}
+	
+	private LineSegment getMostRightSegmentLower(LineSegment seg){
+		LineSegment ptr=seg.rightSegment;
+		LineSegment ptrRet = seg.rightSegment;
+		while(ptr!=null){
+			ptrRet=ptr;
+			ptr=ptr.leftSegment;
+		}
+		return ptrRet;
+	}
+	
+	private LineSegment getMostRightSegmentUpper(LineSegment seg){
+		LineSegment ptr=seg.parentSegment;
+		LineSegment ptrRet=null;
+		while(ptr!=null){
+			if(ptr.parentSegment==null){
+				//print(seg.name+" Segment has no right child" );
+				ptr=null;
+			}else{
+				if(ptr.parentSegment.leftSegment==ptr){
+					ptrRet=ptr.parentSegment;
+					ptr=null;
+				}else{//then must be a left segment so go upward
+					ptr=ptr.parentSegment;
+				}
+			}
+		}
+		return ptrRet;
+	}
+	
+	public void updateLineSegments(CollisionPoint collisionEP){
+		if(collisionEP==null){
+			return;
+		}
+		
+		EndPoint array[] = new EndPoint[2];
+		array[0]=collisionEP;
+		array[1]=collisionEP;
+		
+		LineSegment seg1 = collisionEP.seg1;
+		LineSegment seg2 = collisionEP.seg2;
+		
+		LineSegment seg1Left = this.getLeftSegment(seg1);
+		
+		//System.out.println("Had Collision, remove first segment from DS");
+		this.removeSegment(seg1,array);
+		//this.printEntireStructure();
+		//System.out.println("Had Collision, remove second segment from DS");
+		this.removeSegment(seg2,array);
+		
+		//this.printEntireStructure();
+		//System.out.println("Now re add them "+seg2.name+" and "+seg1.name);
+		if(seg1Left==seg2){//seg2 is to left of seg1
+			this.addSegment(seg1, array);
+			//System.out.println("Added "+seg1.name+" first then "+seg2.name	);
+			this.addSegment(seg2, array);
+		}else{//seg2 is to right of seg1
+			this.addSegment(seg2, array);
+			//System.out.println("Added "+seg2.name+" first then "+seg1.name	);
+			this.addSegment(seg1, array);
+		}
+		//System.out.println("done");
+		
+	}
+	
 	public void printEntireStructure(){
-		print("Show structure");
-		if(this.rootNode==null){
+		//print("Show structure");
+		if(this.rootSegment==null){
 			print("depth is zero");
 			return;
 		}
 		this.resetVisited();
 		DepthVisitor dv = new DepthVisitor();
-		this.rootNode.accept(dv);
+		this.rootSegment.accept(dv);
 		print("depth is "+dv.maxdepth);
 		
 		this.resetVisited();
 		TreeVisitor tv = new TreeVisitor(dv.maxdepth);
-		this.rootNode.accept(tv);
+		this.rootSegment.accept(tv);
 		
 		String array[] = tv.treearray;
+		//print("********");print("********");
+		//for(int i=0;i<array.length;i++){
+		//	print(i+":"+array[i]);
+		//}
+		//print("********");print("********");
 		int olddivisor=-1;
 		for(int i=0;i<array.length;i++){
 			if(i!=0){
@@ -394,7 +456,7 @@ public class SweepLine {
 				double length =  ( (Math.pow(2, dv.maxdepth))- Math.pow(2,divisor) ) / (Math.pow(2, divisor)+1) ;
 				//System.out.println("at "+i+" length div is "+length);
 				StringBuffer sb = new StringBuffer();
-				for(double j=0.0;j<length;j=j+0.07){
+				for(double j=0.0;j<length;j=j+0.085){
 					sb.append(" ");
 				}
 				if(olddivisor!=divisor){
@@ -406,123 +468,30 @@ public class SweepLine {
 				
 			}
 		}
+		System.out.println("");
 	}
 	
 	private void print(String msg){
-		//System.out.println(msg);
+		//System.out.println("SweepLine2::"+msg);
 	}
-	
-	public LineSegment getRightSegment(LineSegment seg,EndPoint cmpEP[]) {
-		DataStructureNode ptr=this.rootNode;
-		DataStructureNode mostRightptr=null;
-		EndPoint segEP[];
-		if(cmpEP==null)
-		     segEP = MathFactory.getInstance().getSweepLineOrdered(seg);
-		else
-			 segEP=cmpEP;
-		boolean foundnode=false;
-		
-		while(ptr!=null){
-			//ptr.segnode=seg;
-			if(ptr.segnode==seg){
-				//System.out.println("Found the segment");
-				//found node now do left check use mostRightptr may still be null
-				foundnode=true;
-				//check right, if null then done, if not null, set ptr to right and then lefts for ever
-				if(ptr.rightnode!=null){
-					ptr=ptr.rightnode;
-					while(ptr!=null){
-						if(mostRightptr!=null){
-							//compare smallest values
-							double curr=MathFactory.getInstance().crossproduct((LineSegment)mostRightptr.segnode, segEP[0]);
-							double comp=MathFactory.getInstance().crossproduct((LineSegment)ptr.segnode, segEP[0]);
-							//System.out.println("******** Get Right Comparision is curr "+curr+" compared to "+comp);
-							if(comp<curr){
-								mostRightptr=ptr;
-							}
-							ptr=ptr.leftnode;
-						}else{
-							mostRightptr=ptr;
-							ptr=ptr.leftnode;
-						}
-					}
+
+	public boolean sweepLineCheck(CollisionPoint cp1) {
+		if(this.sweepLinePosition==null){
+			return true;
+		}else{
+			if(cp1.y<this.sweepLinePosition.y){
+				return false;
+			}else{
+				if(cp1.y==this.sweepLinePosition.y){
+					if(cp1.x<this.sweepLinePosition.x)
+						return false;
+					else
+						return true;
 				}else{
-					//System.out.println("Found the segment, but no left tree so done");
+					return true;
 				}
-				ptr=null;
-			}else{//search for seg
-				double compRes = ptr.segnode.compareTo(segEP[0]);
-				//print("Compare performed "+compRes);
-				if(compRes<0){//go right in data structure since newEP[0] is to right of this line segment
-					ptr=ptr.rightnode;
-				}else if(compRes>0){
-					mostRightptr=ptr;
-					ptr=ptr.leftnode;
-				}else{
-					ptr=ptr.rightnode;
-				}
-				
 			}
 		}
-		if(mostRightptr==null || foundnode==false)
-			return null;
-		return (LineSegment)mostRightptr.segnode;
-		//return mostRightptr;
-	}
-	
-	public LineSegment getLeftSegment(LineSegment seg,EndPoint cmpEP[]) {
-		DataStructureNode ptr=this.rootNode;
-		DataStructureNode mostLeftptr=null;
-		EndPoint segEP[];
-		if(cmpEP==null)
-		     segEP = MathFactory.getInstance().getSweepLineOrdered(seg);
-		else
-			 segEP=cmpEP;
-		boolean foundnode=false;
 		
-		while(ptr!=null){
-			//ptr.segnode=seg;
-			if(ptr.segnode==seg){
-				foundnode=true;
-				if(ptr.leftnode!=null){
-					ptr=ptr.leftnode;
-					while(ptr!=null){
-						if(mostLeftptr!=null){
-							double curr=MathFactory.getInstance().crossproduct((LineSegment)mostLeftptr.segnode, segEP[0]);
-							double comp=MathFactory.getInstance().crossproduct((LineSegment)ptr.segnode, segEP[0]);
-							if(comp<curr){
-								mostLeftptr=ptr;
-							}
-							ptr=ptr.rightnode;
-						}else{
-							mostLeftptr=ptr;
-							ptr=ptr.rightnode;
-						}
-					}
-				}else{
-					//System.out.println("Found the segment, but no left tree so done");
-				}
-				ptr=null;
-			}else{//search for seg
-				double compRes = ptr.segnode.compareTo(segEP[0]);
-				//System.out.println("Left Compare performed result "+compRes+" comparing "+seg.name+" for left against "+((LineSegment)ptr.rootnode).name);
-				if(compRes<0){//go right in data structure since newEP[0] is to right of this line segment
-					//System.out.println("Go right SetLeftPointer for "+seg.name+" to "+((LineSegment)ptr.rootnode).name);
-					mostLeftptr=ptr;
-					ptr=ptr.rightnode;
-				}else if(compRes>0){
-					//System.out.println("Go left");
-					ptr=ptr.leftnode;
-				}else{
-					mostLeftptr=ptr;
-					ptr=ptr.rightnode;
-				}
-				
-			}
-		}
-		if(mostLeftptr==null || foundnode==false)
-			return null;
-		return (LineSegment)mostLeftptr.segnode;
-		//return mostLeftptr;
 	}
 }

@@ -46,11 +46,11 @@ public class EndPointQueue {
 						ptr=ptr.leftnode;
 					}
 				}else{//these two endpoints are the same
-					System.out.println("Two end points are the same check if previously added collision point");
+					print("Two end points are the same check if previously added collision point");
 					if(n.rootnode instanceof raven.collision.CollisionPoint){
 						if(ptr.rootnode instanceof raven.collision.CollisionPoint){
 							if( ((CollisionPoint)n.rootnode).x==((CollisionPoint)ptr.rootnode).x && ((CollisionPoint)n.rootnode).y==((CollisionPoint)ptr.rootnode).y ){
-								System.out.println("Collision Point Previously added using "+((CollisionPoint)n.rootnode).x+","+((CollisionPoint)n.rootnode).y);
+								print("Collision Point Previously added using "+((CollisionPoint)n.rootnode).x+","+((CollisionPoint)n.rootnode).y);
 								ptr=null;
 								this.queuecount--;
 								return;
@@ -70,6 +70,10 @@ public class EndPointQueue {
 		}
 	}
 	
+	private void print(String msg) {
+		//System.out.println("EndPointQueue::"+msg);
+	}
+
 	public EndPoint pop(){
 		if(this.rootNode==null){
 			queuecount=0;

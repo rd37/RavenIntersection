@@ -2,7 +2,6 @@ package raven.collision;
 
 import raven.collision.datastructure.MathFactory;
 import raven.collision.datastructure.Visitor;
-import raven.testing.DepthVisitor;
 
 public class LineSegment {
 	public EndPoint start;
@@ -25,10 +24,7 @@ public class LineSegment {
 		else
 			return res;
 	}
-	//public double compaeToDouble(Object arg0) {
-	//	return MathFactory.getInstance().crossproduct(this, (EndPoint)arg0);
-	//}
-
+	
 	public void accept(Visitor dv) {
 		dv.visit(this);
 	}

@@ -319,7 +319,8 @@ public class CollisionTester {
 		CollisionDetection2 cd = new CollisionDetection2();
 		cd.clear();
 		
-		int segs[] = {1,1,6,5  ,6,1,1,4  ,1,2,6,7   ,6,2,1,7  };
+		//int segs[] = {1,1,6,5  ,6,1,1,4  ,1,2,6,7   ,6,2,1,7  };
+		int segs[] = {1,1,6,8  ,12,1,2,3  ,5,2,12,11   ,8,5,1,11  };
 		LineSegment array[] = new LineSegment[segs.length/4];
 		for(int i=0;i<segs.length/4;i++){
 			LineSegment seg1 = new LineSegment();
@@ -333,8 +334,11 @@ public class CollisionTester {
 		}
 		cd.populateEventQ(array);
 		cd.solve();
-		System.out.println("done so print structure "+cd.slQ.sweepLinePosition.y);
-		cd.slQ.printEntireStructure();
+		//System.out.println("done so print structure "+cd.slQ.sweepLinePosition.y);
+		//cd.slQ.printEntireStructure();
+		for(int i=0;i<cd.collisions.size();i++){
+			System.out.println("Collision at "+cd.collisions.get(i).x+","+cd.collisions.get(i).y);
+		}
 	}
 	
 	public void runtestcases(){

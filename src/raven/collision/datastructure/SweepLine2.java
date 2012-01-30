@@ -12,6 +12,7 @@ public class SweepLine2 {
 	public EndPoint sweepLinePosition=null;
 	public LineSegment rootSegment = null;
 	public LinkedList<LineSegment> list = new LinkedList<LineSegment>();
+	private double error=0.00000000001;
 	
 	public void clear(){
 		rootSegment=null;
@@ -44,7 +45,7 @@ public class SweepLine2 {
 			list.add(seg);
 			return;
 		}
-		if(ordEP[0].y<sweepLinePosition.y){
+		if(ordEP[0].y<(sweepLinePosition.y-this.error)){
 			print("Sweep Line Violation ... ignore "+seg.name);
 	    	return;
 		}else
@@ -57,8 +58,8 @@ public class SweepLine2 {
 		//print("add segment "+seg.name);
 		while(ptr!=null){
 			double compRes = ptr.compareTo(ordEP[0]);
-			if(cmpEP!=null)
-				System.out.println("CP compare is "+compRes+" between tree seg "+ptr.name+" and insert seg "+seg.name);
+			//if(cmpEP!=null)
+				//System.out.println("CP compare is "+compRes+" between tree seg "+ptr.name+" and insert seg "+seg.name);
 			if(compRes<=0){//go right in data structure
 				if(ptr.rightSegment!=null){
 					ptr=ptr.rightSegment;
@@ -96,11 +97,12 @@ public class SweepLine2 {
 		}
 		
 		
-		if(ordEP[1].y<sweepLinePosition.y){
+		if(ordEP[1].y<(sweepLinePosition.y-this.error)){
 			System.out.println("****This segment should have already been removed "+seg.name+" epY:"+ordEP[1].y+" sweepline y "+this.sweepLinePosition.y);
 	    	return;
 		}else
 			sweepLinePosition=ordEP[1];
+			
 		
 		/*
 		 * case 1 is both children are null
@@ -413,11 +415,11 @@ public class SweepLine2 {
 		//System.out.println("Now re add them "+seg2.name+" and "+seg1.name);
 		if(seg1Left==seg2){//seg2 is to left of seg1
 			this.addSegment(seg1, array);
-			System.out.println("Added "+seg1.name+" first then "+seg2.name	);
+			//System.out.println("Added "+seg1.name+" first then "+seg2.name	);
 			this.addSegment(seg2, array);
 		}else{//seg2 is to right of seg1
 			this.addSegment(seg2, array);
-			System.out.println("Added "+seg2.name+" first then "+seg1.name	);
+			//System.out.println("Added "+seg2.name+" first then "+seg1.name	);
 			this.addSegment(seg1, array);
 		}
 		//System.out.println("done");
@@ -471,5 +473,25 @@ public class SweepLine2 {
 	
 	private void print(String msg){
 		//System.out.println("SweepLine2::"+msg);
+	}
+
+	public boolean sweepLineCheck(CollisionPoint cp1) {
+		if(this.sweepLinePosition==null){
+			return true;
+		}else{
+			if(cp1.y<this.sweepLinePosition.y){
+				return false;
+			}else{
+				if(cp1.y==this.sweepLinePosition.y){
+					if(cp1.x<this.sweepLinePosition.x)
+						return false;
+					else
+						return true;
+				}else{
+					return true;
+				}
+			}
+		}
+		
 	}
 }

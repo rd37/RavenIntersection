@@ -43,14 +43,14 @@ public class CollisionDetection2 {
 			}
 			
 			if(ep instanceof raven.collision.CollisionPoint){
-				//print("Collision Point detected so flip them "+((CollisionPoint) ep).x+","+((CollisionPoint) ep).y+" between "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name);
+				print("Collision Point detected so flip them "+((CollisionPoint) ep).x+","+((CollisionPoint) ep).y+" between "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name);
 				collisions.add((CollisionPoint) ep);
 				
-				print("before collision point switch");
-				slQ.printEntireStructure();
+				//print("before collision point switch");
+				//slQ.printEntireStructure();
 				slQ.updateLineSegments((CollisionPoint) ep);//basically switch node positions
-				print("after collision point switch");
-				slQ.printEntireStructure();
+				//print("after collision point switch");
+				//slQ.printEntireStructure();
 				//check for collisions with each neighbour so two collision checks here
 				LineSegment seg1 = ((CollisionPoint)ep).seg1;
 				LineSegment seg2 = ((CollisionPoint)ep).seg2;
@@ -68,14 +68,14 @@ public class CollisionDetection2 {
 					print("Check for collision between "+seg1.name+" and "+seg1Right+"  also   "+seg2.name+" and "+seg2Left);
 					if(seg1Right!=null){
 						CollisionPoint cp1 = MathFactory.getInstance().getIntersection(seg1, seg1Right);
-						if(cp1!=null){
+						if(cp1!=null && slQ.sweepLineCheck(cp1)){
 							print("New Collision found after previous collision at point "+cp1.x+","+cp1.y+" between "+seg1.name+" and its righ "+seg1Right.name);
 							this.epQ.addEndPoint(cp1);
 						}
 					}
 					if(seg2Left!=null){
 						CollisionPoint cp2 = MathFactory.getInstance().getIntersection(seg2, seg2Left);
-						if(cp2!=null){
+						if(cp2!=null && slQ.sweepLineCheck(cp2)){
 							print("New Collision found after previous collision at point "+cp2.x+","+cp2.y+" between "+seg2.name+" and its left "+seg2Left.name);
 							this.epQ.addEndPoint(cp2);
 						}
@@ -84,7 +84,7 @@ public class CollisionDetection2 {
 					print("Check for collision between "+seg1.name+" and "+seg1Left+"  also   "+seg2.name+" and "+seg2Right);
 					if(seg1Left!=null){
 						CollisionPoint cp1 = MathFactory.getInstance().getIntersection(seg1, seg1Left);
-						if(cp1!=null){
+						if(cp1!=null && slQ.sweepLineCheck(cp1)){
 							print("New Collision found after previous collision at point "+cp1.x+","+cp1.y+" between "+seg1.name+" and its left "+seg1Left.name);
 							
 							this.epQ.addEndPoint(cp1);
@@ -92,7 +92,7 @@ public class CollisionDetection2 {
 					}
 					if(seg2Right!=null){
 						CollisionPoint cp2 = MathFactory.getInstance().getIntersection(seg2, seg2Right);
-						if(cp2!=null){
+						if(cp2!=null && slQ.sweepLineCheck(cp2)){
 							print("New Collision found after previous collision at point "+cp2.x+","+cp2.y+" between "+seg2.name+" its Right seg "+seg2Right.name);
 							
 							this.epQ.addEndPoint(cp2);
@@ -108,6 +108,7 @@ public class CollisionDetection2 {
 					this.removeLinesegment(ep);
 				}
 			}
+			System.out.println("New Sweep Line Level Y: "+slQ.sweepLinePosition.y+" , x:"+slQ.sweepLinePosition.x);
 		}
 	}
 	
@@ -121,7 +122,7 @@ public class CollisionDetection2 {
 		LineSegment leftSeg=slQ.getLeftSegment(ep.seg);
 		if(leftSeg!=null){
 			CollisionPoint cp = MathFactory.getInstance().getIntersection(ep.seg, leftSeg);
-			if(cp!=null){
+			if(cp!=null && slQ.sweepLineCheck(cp)){
 				print("Collision Point created at "+cp.x+","+cp.y+" between "+cp.seg1.name+" and "+cp.seg2.name);
 				epQ.addEndPoint(cp);
 			}
@@ -131,7 +132,7 @@ public class CollisionDetection2 {
 		LineSegment rightSeg=slQ.getRightSegment(ep.seg);
 		if(rightSeg!=null){
 			CollisionPoint cp = MathFactory.getInstance().getIntersection(ep.seg, rightSeg);
-			if(cp!=null){
+			if(cp!=null && slQ.sweepLineCheck(cp) ){
 				print("Collision Point created at "+cp.x+","+cp.y+" between "+cp.seg1.name+" and "+cp.seg2.name);
 				epQ.addEndPoint(cp);
 			}
@@ -150,7 +151,7 @@ public class CollisionDetection2 {
 		
 		if(seg1Left!=null && seg1Right!=null){
 			CollisionPoint cp1 = MathFactory.getInstance().getIntersection(seg1Left, seg1Right);
-			if(cp1!=null){
+			if(cp1!=null && slQ.sweepLineCheck(cp1)){
 				print("Collision Detected add to EP queue: "+ep.seg.name+" was removed and caused collision between "+seg1Left.name+" and "+seg1Right.name);
 				epQ.addEndPoint(cp1);
 			}

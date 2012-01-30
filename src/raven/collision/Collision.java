@@ -32,7 +32,7 @@ public class Collision implements MouseListener,Runnable{
 	public static int WAITINGTOSTARTSIM=1;
 	public static int SIMULATIONRUNNING=2;
 	
-	private CollisionDetection cd = new CollisionDetection();
+	private CollisionDetection2 cd = new CollisionDetection2();
 	
 	public void init(){
 		mainFrame.getContentPane().setLayout(new BorderLayout());
@@ -111,7 +111,7 @@ public class Collision implements MouseListener,Runnable{
 	public void run(){
 		while(true){
 			try{
-				Thread.sleep(600);
+				Thread.sleep(300);
 				switch(state){
 					case (0):
 						//print("add pick off arms and start demo");
@@ -130,7 +130,8 @@ public class Collision implements MouseListener,Runnable{
 					    	ep2.x=shiftret[0];
 					    	ep2.y=shiftret[1];
 					    	cd.clear();
-					    	cd.solve2(this.linesegments);
+					    	cd.populateEventQ(this.linesegments);
+					    	cd.solve();
 					    	this.updateCanvas();
 					    }
 					    break;

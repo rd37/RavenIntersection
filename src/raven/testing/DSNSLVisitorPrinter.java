@@ -27,4 +27,10 @@ public class DSNSLVisitorPrinter implements Visitor{
 			}
 		}
 	}
+
+	@Override
+	public void visit(LineSegment seg) {
+		// TODO Auto-generated method stub
+		
+	}
 }

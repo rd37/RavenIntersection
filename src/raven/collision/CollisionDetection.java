@@ -81,10 +81,10 @@ public class CollisionDetection {
 				CollisionPoint cp2L=null;
 				CollisionPoint cp2R=null;
 				
-				CollisionPoint nbr1=null;
-				CollisionPoint nbr2=null;
+				//CollisionPoint nbr1=null;
+				//CollisionPoint nbr2=null;
 				
-				if(seg1Right!=null & seg1Left!=null){
+				/*if(seg1Right!=null & seg1Left!=null){
 					nbr1= MathFactory.getInstance().getIntersection(seg1Left, seg1Right);
 				}
 				if(nbr1!=null){
@@ -97,7 +97,7 @@ public class CollisionDetection {
 				if(nbr2!=null){
 					if( ep.y<nbr2.y && (!(ep.x==nbr2.x && ep.y==nbr2.y)) )
 						epQ.addEndPoint(nbr2);
-				}
+				}*/
 				//do segment 1 first
 				if(seg1Left==seg2){//then check for collision between seg1 and seg1Right
 					if(seg1Right!=null)
@@ -109,12 +109,12 @@ public class CollisionDetection {
 				}
 				if(cp1R!=null){
 					print("After collision point flip There is a right collision between these segments at "+cp1R.x+","+cp1R.y);
-					if( ep.y<cp1R.y && (!(ep.x==cp1R.x && ep.y==cp1R.y)) )
+					//if( ep.y<cp1R.y && (!(ep.x==cp1R.x && ep.y==cp1R.y)) )
 						epQ.addEndPoint(cp1R);
 				}
 				if(cp1L!=null){
 					print("After collision point flip There is a right collision between these segments at "+cp1L.x+","+cp1L.y);
-					if( ep.y<cp1L.y && (!(ep.x==cp1L.x && ep.y==cp1L.y)) )
+					//if( ep.y<cp1L.y && (!(ep.x==cp1L.x && ep.y==cp1L.y)) )
 						epQ.addEndPoint(cp1L);
 				}
 				//do segment 2 now
@@ -127,12 +127,12 @@ public class CollisionDetection {
 				}
 				if(cp2R!=null){
 					print("After collison point flip There is a right collision between these segments"+cp2R.x+","+cp2R.y);
-					if( ep.y<cp2R.y && (!(ep.x==cp2R.x && ep.y==cp2R.y)) )
+					//if( ep.y<cp2R.y && (!(ep.x==cp2R.x && ep.y==cp2R.y)) )
 						epQ.addEndPoint(cp2R);
 				}
 				if(cp2L!=null){
 					print("After collison point flip There is a left collision between these segments"+cp2L.x+","+cp2L.y);
-					if( ep.y<cp2L.y && (!(ep.x==cp2L.x && ep.y==cp2L.y)) )
+					//if( ep.y<cp2L.y && (!(ep.x==cp2L.x && ep.y==cp2L.y)) )
 						epQ.addEndPoint(cp2L);
 				}
 			}else{
@@ -220,7 +220,7 @@ public class CollisionDetection {
 				//print("Between "+seg1Left.name+" & "+seg1Right.name);
 				epQ.addEndPoint(cp1);
 			}else{
-				//print("After remove line segment , There is no collsion between LR segments");
+				//print("After remove line segment , There is no collision between LR segments");
 			}
 		}else{
 			//print("Removed "+ep.seg.name+" but no collisions");

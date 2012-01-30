@@ -1,6 +1,7 @@
 package raven.testing;
 
 import raven.collision.EndPoint;
+import raven.collision.LineSegment;
 import raven.collision.datastructure.DataStructureNode;
 import raven.collision.datastructure.Visitor;
 
@@ -21,5 +22,11 @@ public class DSNVisitorPrinter implements Visitor{
 					System.out.println("Done");
 			}
 		}
+	}
+
+	@Override
+	public void visit(LineSegment seg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

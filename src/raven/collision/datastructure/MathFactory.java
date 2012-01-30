@@ -41,7 +41,7 @@ public class MathFactory {
 				return null;
 			}
 		}else{
-			System.out.println("Compared Lines are Parallel "+seg1.name+" "+seg2.name);
+			//System.out.println("Compared Lines are Parallel "+seg1.name+" "+seg2.name);
 			return null;
 		}
 		

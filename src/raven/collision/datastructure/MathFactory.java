@@ -11,8 +11,38 @@ public class MathFactory {
 	
 	public static MathFactory getInstance(){return factory;}
 	
+	public LineSegment phaseShiftEndPoint(EndPoint segSrc,EndPoint segDest,double angle) {
+		double xoffset=segDest.x-segSrc.x;
+		double yoffset=segDest.y-segSrc.y;
+		
+		double newx=(xoffset*Math.cos(angle)-yoffset*Math.sin(angle));
+		double newy=(xoffset*Math.sin(angle)+yoffset*Math.cos(angle));
+	    
+		LineSegment returnSeg = new LineSegment();
+		returnSeg.start=new EndPoint(segSrc.x,segSrc.y);
+		returnSeg.currstop=new EndPoint(segSrc.x+newx,segSrc.y+newy);
+		returnSeg.stopref=new EndPoint(segSrc.x+newx,segSrc.y+newy);
+		return returnSeg;
+	}
+	
+	public double getLength(LineSegment seg){
+		double x1 =seg.start.x-seg.currstop.x;
+		double y1 = seg.start.y-seg.currstop.y;
+		double x1sq = Math.pow(x1, 2);
+		double y1sq = Math.pow(y1, 2.0);
+		return Math.abs(Math.pow(x1sq+y1sq, 0.5));
+	}
+	
+	public double dotProduct(LineSegment seg1,LineSegment seg2){
+		double seg1Length = getLength(seg1);
+		double seg2Length = getLength(seg2);
+		return (seg1.start.x-seg1.currstop.x)/seg1Length*(seg2.start.x-seg2.currstop.x)/seg2Length+(seg1.start.y-seg1.currstop.y)/seg1Length*(seg2.start.y-seg2.currstop.y)/seg2Length ;
+	}
+	
 	public CollisionPoint getIntersection(LineSegment seg1, LineSegment seg2){
 		if(seg1==null || seg2 == null)
+			return null;
+		if(seg1.arm==seg2.arm)
 			return null;
 		EndPoint eps1[] = this.getSweepLineOrdered(seg1);
 		double x1=eps1[0].x;

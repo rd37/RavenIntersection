@@ -12,9 +12,9 @@ public class LineSegment {
 	public LineSegment leftSegment=null;
 	public LineSegment rightSegment=null;
 	public String name="seg";
+	public RavenArm arm=null;
 	public boolean visited=false;
 	private double error=0.0000001;
-	//public boolean removed=false;
 	
 	public double compareTo(Object arg0) {
 		double res = MathFactory.getInstance().crossproduct(this, (EndPoint)arg0);

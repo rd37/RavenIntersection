@@ -320,7 +320,6 @@ public class CollisionTester {
 		CollisionDetection cd = new CollisionDetection();
 		cd.clear();
 		
-		//int segs[] = {1,1,6,5  ,6,1,1,4  ,1,2,6,7   ,6,2,1,7  };
 		int segs[] = {1,1,6,8  ,12,1,2,3  ,5,2,12,11   ,8,5,1,11  };
 		LineSegment array[] = new LineSegment[segs.length/4];
 		for(int i=0;i<segs.length/4;i++){
@@ -331,12 +330,10 @@ public class CollisionTester {
 			seg1.currstop=ep2;ep2.seg=seg1;
 			seg1.name="seg"+i;
 			array[i]=seg1;
-			//cd.insertLinesegment(ep1);
 		}
 		cd.populateEventQ(array);
 		cd.solve();
-		//System.out.println("done so print structure "+cd.slQ.sweepLinePosition.y);
-		//cd.slQ.printEntireStructure();
+		
 		for(int i=0;i<cd.collisions.size();i++){
 			System.out.println("Collision at "+cd.collisions.get(i).x+","+cd.collisions.get(i).y);
 		}

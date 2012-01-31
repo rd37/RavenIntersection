@@ -19,7 +19,9 @@ public class CollisionDetection {
 	
 	public void populateEventQ(LineSegment segments[]){
 		for(int i=0;i<segments.length;i++){
+			
 			LineSegment seg = segments[i];
+			//print("add seg "+seg.start.x+" "+seg.currstop.x	+" q c "+epQ.queuecount);
 			epQ.addEndPoint(seg.start);
 			epQ.addEndPoint(seg.currstop);
 		}
@@ -32,15 +34,17 @@ public class CollisionDetection {
 	 *      -if intersection end point then add to intersection ep list
 	 */
 	public void solve(){
-		
+		print("solve "+epQ.queuecount);
 		while(epQ.queuecount>0){
+			//print("pop");
 			EndPoint ep = epQ.pop();
+			print("poped "+ep.x+","+ep.y+ep.seg.name);
 			if( !(ep instanceof raven.collision.CollisionPoint) ){
 				print("Popped EP belonging to segment "+ep.seg.name+" at Y:"+ep.y+","+ep.x);
 			}else{
 				print("Popped EP Collision belongs to segments "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name+" at Y:"+ep.y+","+ep.x);
 			}
-			
+			print("opp compoete");
 			if(ep instanceof raven.collision.CollisionPoint){
 				print("Collision Point detected so flip them "+((CollisionPoint) ep).x+","+((CollisionPoint) ep).y+" between "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name);
 				collisions.add((CollisionPoint) ep);
@@ -177,6 +181,6 @@ public class CollisionDetection {
 	
 	
 	public void print(String msg){
-		//System.out.println("CollisionDetection:"+msg);
+		System.out.println("CollisionDetection:"+msg);
 	}
 }

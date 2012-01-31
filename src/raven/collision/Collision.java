@@ -15,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import raven.collision.datastructure.MathFactory;
+
 public class Collision implements MouseListener,Runnable{
 	private JFrame mainFrame = new JFrame("Collision Demo");
 	private JPanel controlPanel = new JPanel();
@@ -23,6 +25,7 @@ public class Collision implements MouseListener,Runnable{
 	
 	private int maxScreenSegments=4;
 	private LineSegment[] linesegments;
+	private RavenArm[] armSegments;
 	private int setSegments = 0;
 	private double angle=0.01;
 	
@@ -32,6 +35,17 @@ public class Collision implements MouseListener,Runnable{
 	public static int SIMULATIONRUNNING=2;
 	
 	private CollisionDetection cd = new CollisionDetection();
+	
+	public LineSegment[] getLineSegments(){
+		LineSegment array[] = new LineSegment[16];
+		for(int i=0;i<linesegments.length;i++){
+			array[4*i]=armSegments[i].currseg;
+			array[4*i+1]=armSegments[i].seg1;
+			array[4*i+2]=armSegments[i].seg2;
+			array[4*i+3]=armSegments[i].seg12;
+		}
+		return array;
+	}
 	
 	public void init(){
 		mainFrame.getContentPane().setLayout(new BorderLayout());
@@ -90,19 +104,20 @@ public class Collision implements MouseListener,Runnable{
 			linesegments[i].start.seg=linesegments[i];
 			linesegments[i].name="seg"+i;
 			if(i==0){
-				linesegments[i].start.x=0.01;
-				linesegments[i].start.y=0.01;
+				linesegments[i].start.x=0;
+				linesegments[i].start.y=0;
 			}else if(i==1){
-				linesegments[i].start.x=199.99;
-				linesegments[i].start.y=0.02;
+				linesegments[i].start.x=200;
+				linesegments[i].start.y=0;
 			}else if(i==2){
-				linesegments[i].start.x=199.98;
-				linesegments[i].start.y=199.6;
+				linesegments[i].start.x=200;
+				linesegments[i].start.y=200;
 			}else if(i==3){
-				linesegments[i].start.x=0.02;
-				linesegments[i].start.y=199.97;
+				linesegments[i].start.x=0;
+				linesegments[i].start.y=200;
 			}
 		}
+		armSegments = new RavenArm[4];
 		Thread thisThread = new Thread(this);
 		thisThread.start();
 	}
@@ -129,7 +144,7 @@ public class Collision implements MouseListener,Runnable{
 					    	ep2.x=shiftret[0];
 					    	ep2.y=shiftret[1];
 					    	cd.clear();
-					    	cd.populateEventQ(this.linesegments);
+					    	cd.populateEventQ(this.getLineSegments());
 					    	cd.solve();
 					    	this.updateCanvas();
 					    }
@@ -155,11 +170,6 @@ public class Collision implements MouseListener,Runnable{
 		double xoffset = (x-100)*(-1);
 		double yoffset = y-100;
 		
-		//double hyp=Math.pow(Math.pow(xoffset, 2.0)+Math.pow(yoffset, 2.0), 0.5);
-		//double currangle=Math.atan( ((double)yoffset)/((double)xoffset) );
-	    //double vector=this.angle*Math.PI*2/360.0;
-	    //int newx=(int)(xoffset+hyp*Math.sin(vector));
-	    //int newy=(int)(xoffset+hyp*Math.cos(vector));
 		double newx=(xoffset*Math.cos(this.angle)-yoffset*Math.sin(this.angle));
 		double newy=(xoffset*Math.sin(this.angle)+yoffset*Math.cos(this.angle));
 	    double retx = (newx*(-1))+100;
@@ -178,12 +188,34 @@ public class Collision implements MouseListener,Runnable{
 		g.clearRect(0, 0, 200, 200);
 		//redraw all lines or as many as shown
 		for(int i=0;i<this.setSegments;i++){
-			int sx = (int)this.linesegments[i].start.x;
-			int sy = (int)this.linesegments[i].start.y;
-			int ex = (int)this.linesegments[i].currstop.x;
-			int ey = (int)this.linesegments[i].currstop.y;
+			EndPoint ord[] = MathFactory.getInstance().getSweepLineOrdered(linesegments[i]);
+			if(i<2)
+				armSegments[i].udpate(ord[0], ord[1]);
+			else
+				armSegments[i].udpate(ord[1], ord[0]);
+			int sx = (int)this.armSegments[i].currseg.start.x;
+			int sy = (int)this.armSegments[i].currseg.start.y;
+			int ex = (int)this.armSegments[i].currseg.currstop.x;
+			int ey = (int)this.armSegments[i].currseg.currstop.y;
 			g.setColor(Color.BLACK);
 			g.drawLine(sx, sy, ex, ey );
+			
+			int sx1 = (int)this.armSegments[i].seg1.start.x;
+			int sy1 = (int)this.armSegments[i].seg1.start.y;
+			int ex1 = (int)this.armSegments[i].seg1.currstop.x;
+			int ey1 = (int)this.armSegments[i].seg1.currstop.y;
+			
+			g.setColor(Color.BLUE);
+			g.drawLine(sx1, sy1, ex1, ey1 );
+			
+			int sx2 = (int)this.armSegments[i].seg2.start.x;
+			int sy2 = (int)this.armSegments[i].seg2.start.y;
+			int ex2 = (int)this.armSegments[i].seg2.currstop.x;
+			int ey2 = (int)this.armSegments[i].seg2.currstop.y;
+			
+			g.setColor(Color.BLUE);
+			g.drawLine(sx2, sy2, ex2, ey2 );
+			g.drawLine(ex1, ey1, ex2, ey2);
 			g.setColor(Color.RED);
 			g.drawOval(0, 0, 199, 199);
 		}
@@ -210,6 +242,12 @@ public class Collision implements MouseListener,Runnable{
 			this.linesegments[this.setSegments].currstop=ep2;
 			ep.seg=this.linesegments[this.setSegments];
 			ep2.seg=this.linesegments[this.setSegments];
+			
+			EndPoint ord[] = MathFactory.getInstance().getSweepLineOrdered(linesegments[this.setSegments]);
+			if(this.setSegments<2)
+				this.armSegments[this.setSegments]=new RavenArm(ord[0],ord[1]);
+			else
+				this.armSegments[this.setSegments]=new RavenArm(ord[1],ord[0]);
 			this.setSegments++;
 			if(setSegments==this.maxScreenSegments)
 				state=Collision.WAITINGTOSTARTSIM;

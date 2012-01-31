@@ -17,7 +17,18 @@ public class MathFactoryTest extends TestCase {
 	}
 
 	public void testCrossproduct() {
-		//fail("Not yet implemented");
+		LineSegment seg = new LineSegment();
+		seg.start = new EndPoint(1,2);
+		seg.currstop = new EndPoint(2,2);
+		EndPoint cmpPoint = new EndPoint(0,2);
+		double res = MathFactory.getInstance().crossproduct(seg, cmpPoint);
+		assertEquals("Check if point is in line",0.0,res);
+		cmpPoint = new EndPoint(0,1);
+		res = MathFactory.getInstance().crossproduct(seg, cmpPoint);
+		assertTrue(res<0);
+		cmpPoint = new EndPoint(0,3);
+		res = MathFactory.getInstance().crossproduct(seg, cmpPoint);
+		assertTrue(res>0);
 	}
 
 }

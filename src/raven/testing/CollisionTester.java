@@ -13,58 +13,6 @@ import raven.collision.datastructure.SweepLine;
 
 public class CollisionTester {
 	
-	private void endPointQueueTestCase(){
-		Random rand = new Random(555);
-		EndPointQueue epq = new EndPointQueue();
-		System.out.println("***************Create Fake End points************");
-		for(int i=0;i<20;i++){
-			double x = 200*rand.nextDouble();
-			double y = 200*rand.nextDouble();
-			EndPoint ep = new EndPoint();
-			ep.x=(int)x;
-			ep.y=(int)y;
-			System.out.println("Create Node "+i+":"+ep.x+","+ep.y+" ");
-			epq.addEndPoint(ep);
-		}
-		System.out.println("");
-		System.out.println("***************done************");
-		System.out.println("***************Now print them in order************");
-		epq.showDataStructure();
-		System.out.println("***************done************");
-		System.out.println("***************Now pop 10 of them the reprint************");
-		for(int i=0;i<10;i++){
-			EndPoint ep=epq.pop();
-			System.out.println("Popped "+ep.x+","+ep.y+" ");
-		}
-		System.out.println("***************show ds***********");
-		epq.showDataStructure();
-		System.out.println("***************done now add 5 more************");
-		for(int i=0;i<5;i++){
-			double x = 200*rand.nextDouble();
-			double y = 200*rand.nextDouble();
-			EndPoint ep = new EndPoint();
-			ep.x=(int)x;
-			ep.y=(int)y;
-			System.out.println("Create Node "+i+":"+ep.x+","+ep.y+" ");
-			epq.addEndPoint(ep);
-		}
-		System.out.println("***************Now pop 5 of them the reprint************");
-		for(int i=0;i<15;i++){
-			EndPoint ep=epq.pop();
-			System.out.println("Popped "+ep.x+","+ep.y+" ");
-		}
-		System.out.println("***************show ds***********");
-		epq.showDataStructure();
-	}
-	
-	private void mathFactoryTestCase(){
-		LineSegment seg = new LineSegment();
-		seg.start = new EndPoint(1,2);
-		seg.currstop = new EndPoint(2,2);
-		EndPoint cmpPoint = new EndPoint(0,2);
-		double res = MathFactory.getInstance().crossproduct(seg, cmpPoint);
-		System.out.println("Res "+res);
-	}
 	
 	private void sweepLineTestCase(){
 		/*

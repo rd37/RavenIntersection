@@ -144,10 +144,6 @@ public class CollisionTester {
 		CollisionPoint cp = MathFactory.getInstance().getIntersection(array[0], array[1]);
 		cd.slQ.updateLineSegments(cp);
 		cd.slQ.printEntireStructure();
-		//cd.showEPLeftRight(array[1]);
-		//for(int i=0;i<array.length;i++){
-		//	cd.showEPLeftRight(array[i]);
-		//}
 		
 	}
 	

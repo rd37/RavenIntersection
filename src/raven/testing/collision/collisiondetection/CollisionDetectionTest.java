@@ -26,8 +26,17 @@ public class CollisionDetectionTest extends TestCase{
 		cd.populateEventQ(array);
 		cd.solve();
 		
-		for(int i=0;i<cd.collisions.size();i++){
-			System.out.println("Collision at "+cd.collisions.get(i).x+","+cd.collisions.get(i).y);
-		}
+		assertTrue(cd.collisions.get(0).x==5.269230769230769);
+		assertTrue(cd.collisions.get(0).y==2.3461538461538463);
+		
+		assertTrue(cd.collisions.get(1).x==2.375);
+		assertTrue(cd.collisions.get(1).y==2.925);
+		
+		assertTrue(cd.collisions.get(2).x==7.6);
+		assertTrue(cd.collisions.get(2).y==5.3428571428571425);
+		
+		assertTrue(cd.collisions.get(3).x==5.4303797468354436);
+		assertTrue(cd.collisions.get(3).y==7.2025316455696204);
+		
 	}
 }

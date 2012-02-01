@@ -38,13 +38,12 @@ public class CollisionDetection {
 		while(epQ.queuecount>0){
 			//print("pop");
 			EndPoint ep = epQ.pop();
-			print("poped "+ep.x+","+ep.y+ep.seg.name);
 			if( !(ep instanceof raven.collision.CollisionPoint) ){
 				print("Popped EP belonging to segment "+ep.seg.name+" at Y:"+ep.y+","+ep.x);
 			}else{
 				print("Popped EP Collision belongs to segments "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name+" at Y:"+ep.y+","+ep.x);
 			}
-			print("opp compoete");
+			
 			if(ep instanceof raven.collision.CollisionPoint){
 				print("Collision Point detected so flip them "+((CollisionPoint) ep).x+","+((CollisionPoint) ep).y+" between "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name);
 				collisions.add((CollisionPoint) ep);
@@ -181,6 +180,6 @@ public class CollisionDetection {
 	
 	
 	public void print(String msg){
-		System.out.println("CollisionDetection:"+msg);
+		//System.out.println("CollisionDetection:"+msg);
 	}
 }

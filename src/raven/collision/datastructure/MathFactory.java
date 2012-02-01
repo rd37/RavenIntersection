@@ -40,10 +40,10 @@ public class MathFactory {
 	}
 	
 	public CollisionPoint getIntersection(LineSegment seg1, LineSegment seg2){
-		if(seg1==null || seg2 == null)
+		if(seg1==null || seg2 == null){
 			return null;
-		if(seg1.arm==seg2.arm)
-			return null;
+		}
+		
 		EndPoint eps1[] = this.getSweepLineOrdered(seg1);
 		double x1=eps1[0].x;
 		double y1=eps1[0].y;
@@ -67,11 +67,11 @@ public class MathFactory {
 				cp.y=y;
 				return cp;
 			}else{
-				//System.out.println("There is a potential collision at "+x+","+y);
+				System.out.println("There is a potential collision at "+x+","+y);
 				return null;
 			}
 		}else{
-			//System.out.println("Compared Lines are Parallel "+seg1.name+" "+seg2.name);
+			System.out.println("Compared Lines are Parallel "+seg1.name+" "+seg2.name);
 			return null;
 		}
 		

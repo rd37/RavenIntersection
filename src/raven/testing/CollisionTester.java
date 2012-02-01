@@ -14,36 +14,6 @@ import raven.collision.datastructure.SweepLine;
 public class CollisionTester {
 	
 	
-	private void sweepLineTestCase(){
-		/*
-		 * create several segments, add to sweepline then print out with visitor
-		 */
-		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
-		SweepLine sl = new SweepLine();
-		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
-		int segs[] = {2,0,3,4   ,5,0,7,4  ,8,0,6,4   ,4,0,8,4       };
-		for(int i=0;i<segs.length/4;i++){
-			LineSegment seg1 = new LineSegment();
-			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
-			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
-			seg1.start=ep1;ep1.seg=seg1;
-			seg1.currstop=ep2;ep2.seg=seg1;
-			list.add(seg1);
-			seg1.name="seg"+i;
-			sl.addSegment(seg1,null);
-			//print("**********");
-			//sl.printEntireStructure();
-			//sl.printEntireStructure();
-		}
-		//print("******** added four lines *******");
-		sl.printEntireStructure();
-		//sl.removeSegment(list.get(0));
-		//sl.removeSegment(list.get(1));
-		//sl.removeSegment(list.get(2));
-		//sl.removeSegment(list.get(3));
-		//sl.printEntireStructure();
-		//now test collision and collision point adding
-	}
 	
 	private void collisionTestCase1(){
 		CollisionDetection cd = new CollisionDetection();
@@ -108,89 +78,6 @@ public class CollisionTester {
 		}
 	}
 	
-	private void intersectionTestCase(){
-		double yptsx[] = {6,9};
-		double yptsy[] = {1,1};
-		double yptsx2[] = {7,8};
-		double yptsy2[] = {2,2};
-		LineSegment array[] = new LineSegment[yptsx.length];
-		for(int i=0;i<yptsx.length;i++){
-			EndPoint ep1 = new EndPoint(yptsx[i],yptsy[i]);
-			EndPoint ep2 = new EndPoint(yptsx2[i],yptsy2[i]);
-			LineSegment seg1 = new LineSegment();
-			ep1.seg=seg1;ep2.seg=seg1;
-			seg1.start=ep1;
-			seg1.stopref=ep2;
-			seg1.currstop=ep2;
-			array[i]=seg1;
-		}
-		EndPoint collision = MathFactory.getInstance().getIntersection(array[0], array[1]);
-		if(collision!=null)
-			print("Collsion at "+collision.x+","+collision.y);
-	}
-	
-	private void sweepLineTestCase1(){
-		/*
-		 * create several segments, add to sweepline then print out with visitor
-		 */
-		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
-		SweepLine sl = new SweepLine();
-		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
-		int segs[] = {1,1,9,3   ,9,1,2,5        };
-		for(int i=0;i<segs.length/4;i++){
-			LineSegment seg1 = new LineSegment();
-			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
-			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
-			seg1.start=ep1;ep1.seg=seg1;
-			seg1.currstop=ep2;ep2.seg=seg1;
-			list.add(seg1);
-			seg1.name="seg"+i;
-			sl.addSegment(seg1,null);
-			//print("**********");
-			//sl.printEntireStructure();
-			//sl.printEntireStructure();
-		}
-		//print("******** added four lines *******");
-		sl.printEntireStructure();
-		CollisionPoint cp = MathFactory.getInstance().getIntersection(list.get(0), list.get(1));
-		if(cp!=null){
-			print("\nCollision orrured at "+cp.x+","+cp.y);
-			sl.updateLineSegments(cp);
-		}else{
-			print("No Collision 1");
-		}
-		sl.printEntireStructure();
-	}
-	
-	private void sweepLineTestCase2(){
-		/*
-		 * create several segments, add to sweepline then print out with visitor
-		 */
-		LinkedList<LineSegment> list =new LinkedList<LineSegment>();
-		SweepLine sl = new SweepLine();
-		//int segs[] = {9,0,3,4  ,7,3,7,4  ,8,1,6,4  ,6,1,8,4  ,5,1,5,4  ,7,1,7,2  ,1,1,4,4  ,0,0,8,8  ,2,3,7,8  ,1,0,4,4};
-		int segs[] = { 1,1,1,3   ,2,1,4,3  ,4,1,2,3   ,5,1,5,3 };
-		for(int i=0;i<segs.length/4;i++){
-			LineSegment seg1 = new LineSegment();
-			EndPoint ep1 = new EndPoint(segs[4*i],segs[4*i+1]);
-			EndPoint ep2 = new EndPoint(segs[4*i+2],segs[4*i+3]);
-			seg1.start=ep1;ep1.seg=seg1;
-			seg1.currstop=ep2;ep2.seg=seg1;
-			list.add(seg1);
-			seg1.name="seg"+i;
-			sl.addSegment(seg1,null);
-		}
-		//print("******** added four lines *******");
-		sl.printEntireStructure();
-		CollisionPoint cp = MathFactory.getInstance().getIntersection(list.get(1), list.get(2));
-		if(cp!=null){
-			print("\nCollision orrured at "+cp.x+","+cp.y);
-			sl.updateLineSegments(cp);
-		}else{
-			print("No Collision 1");
-		}
-		sl.printEntireStructure();
-	}
 	
 	private void collisionTestCase4(){
 		CollisionDetection cd = new CollisionDetection();

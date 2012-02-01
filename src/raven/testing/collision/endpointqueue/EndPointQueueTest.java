@@ -1,7 +1,5 @@
 package raven.testing.collision.endpointqueue;
 
-import static org.junit.Assert.*;
-
 import java.util.Random;
 
 import junit.framework.TestCase;

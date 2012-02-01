@@ -34,10 +34,12 @@ public class CollisionDetection {
 	 *      -if intersection end point then add to intersection ep list
 	 */
 	public void solve(){
-		print("solve "+epQ.queuecount);
+		//print("solve "+epQ.queuecount);
+		
 		while(epQ.queuecount>0){
 			//print("pop");
 			EndPoint ep = epQ.pop();
+			//slQ.printEntireStructure();
 			if( !(ep instanceof raven.collision.CollisionPoint) ){
 				print("Popped EP belonging to segment "+ep.seg.name+" at Y:"+ep.y+","+ep.x);
 			}else{
@@ -45,14 +47,12 @@ public class CollisionDetection {
 			}
 			
 			if(ep instanceof raven.collision.CollisionPoint){
-				print("Collision Point detected so flip them "+((CollisionPoint) ep).x+","+((CollisionPoint) ep).y+" between "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name);
+				//print("Collision Point detected so flip them "+((CollisionPoint) ep).x+","+((CollisionPoint) ep).y+" between "+((CollisionPoint)ep).seg1.name+" and "+((CollisionPoint)ep).seg2.name);
 				collisions.add((CollisionPoint) ep);
 				
-				//print("before collision point switch");
-				//slQ.printEntireStructure();
+				
 				slQ.updateLineSegments((CollisionPoint) ep);//basically switch node positions
-				//print("after collision point switch");
-				//slQ.printEntireStructure();
+				
 				//check for collisions with each neighbour so two collision checks here
 				LineSegment seg1 = ((CollisionPoint)ep).seg1;
 				LineSegment seg2 = ((CollisionPoint)ep).seg2;
@@ -103,14 +103,27 @@ public class CollisionDetection {
 				}
 				
 			}else{
+				while(ep.collisions.size()>0){
+					CollisionPoint cp = new CollisionPoint();
+					EndPoint ep2=ep.collisions.remove();
+					cp.seg1=ep.seg;
+					cp.seg2=ep2.seg;
+					cp.x=ep.x;cp.y=ep.y;
+					this.collisions.add(cp);
+					ep2.collisions.remove(ep);
+				}
 				EndPoint ordered[] = MathFactory.getInstance().getSweepLineOrdered(ep.seg);
 				if(ep == ordered[0]){
+					//print("added "+ep.seg.name);
 					this.insertLinesegment(ep);
 				}else{
+					//slQ.printEntireStructure();
+					//print("removing "+ep.seg.name);
 					this.removeLinesegment(ep);
 				}
 			}
-			print("New Sweep Line Level Y: "+slQ.sweepLinePosition.y+" , x:"+slQ.sweepLinePosition.x);
+			//slQ.printEntireStructure();
+			//print("New Sweep Line Level Y: "+slQ.sweepLinePosition.y+" , x:"+slQ.sweepLinePosition.x);
 		}
 	}
 	
@@ -125,7 +138,7 @@ public class CollisionDetection {
 		if(leftSeg!=null){
 			CollisionPoint cp = MathFactory.getInstance().getIntersection(ep.seg, leftSeg);
 			if(cp!=null && slQ.sweepLineCheck(cp)){
-				print("Collision Point created at "+cp.x+","+cp.y+" between "+cp.seg1.name+" and "+cp.seg2.name);
+				print("Insert Collision Point created at "+cp.x+","+cp.y+" between "+cp.seg1.name+" and "+cp.seg2.name);
 				epQ.addEndPoint(cp);
 			}
 		}
@@ -135,7 +148,7 @@ public class CollisionDetection {
 		if(rightSeg!=null){
 			CollisionPoint cp = MathFactory.getInstance().getIntersection(ep.seg, rightSeg);
 			if(cp!=null && slQ.sweepLineCheck(cp) ){
-				print("Collision Point created at "+cp.x+","+cp.y+" between "+cp.seg1.name+" and "+cp.seg2.name);
+				print("Insert Collision Point created at "+cp.x+","+cp.y+" between "+cp.seg1.name+" and "+cp.seg2.name);
 				epQ.addEndPoint(cp);
 			}
 		}
@@ -154,7 +167,7 @@ public class CollisionDetection {
 		if(seg1Left!=null && seg1Right!=null){
 			CollisionPoint cp1 = MathFactory.getInstance().getIntersection(seg1Left, seg1Right);
 			if(cp1!=null && slQ.sweepLineCheck(cp1)){
-				print("Collision Detected add to EP queue: "+ep.seg.name+" was removed and caused collision between "+seg1Left.name+" and "+seg1Right.name);
+				print("Remove Collision Detected add to EP queue: "+ep.seg.name+" was removed and caused collision between "+seg1Left.name+" and "+seg1Right.name);
 				epQ.addEndPoint(cp1);
 			}
 		}

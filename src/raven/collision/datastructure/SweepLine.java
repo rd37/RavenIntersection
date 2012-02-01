@@ -118,6 +118,7 @@ public class SweepLine {
 				}
 			}else{//remove the root node since no children, this is root node
 				this.rootSegment=null;
+				//System.out.println("root segment is now null "+seg.name);
 			}
 			seg.rightSegment=null;seg.leftSegment=null;seg.parentSegment=null;
 			return;
@@ -150,6 +151,7 @@ public class SweepLine {
 			if(seg.parentSegment==null){ //this is root node
 				rootSegment=seg.leftSegment;
 				seg.leftSegment.parentSegment=null;
+				//System.out.println("should happend for "+seg.name+" new root "+rootSegment.name);
 			}else{
 				if(seg.parentSegment.leftSegment==seg){
 					seg.parentSegment.leftSegment=seg.leftSegment;
@@ -241,7 +243,7 @@ public class SweepLine {
 		}
 		
 		if(seg.parentSegment==null){
-			System.err.println("getLeftSegment: On Left Error seg has no parent, but is not root "+seg.name);
+			//System.out.println("getLeftSegment: On Left Error seg has no parent, but is not root "+seg.name+" ,");
 			return null;
 		}
 		
@@ -324,7 +326,7 @@ public class SweepLine {
 		}
 		
 		if(seg.parentSegment==null){
-			System.err.println("getRightSegment: On Get Right Error seg has no parent, but is not root "+seg.name);
+			//System.err.println("getRightSegment: On Get Right Error seg has no parent, but is not root "+seg.name);
 			return null;
 		}
 		
@@ -392,7 +394,7 @@ public class SweepLine {
 	}
 	
 	public void updateLineSegments(CollisionPoint collisionEP){
-		if(collisionEP==null){
+		if(collisionEP==null || (collisionEP.x==this.sweepLinePosition.x && collisionEP.y==this.sweepLinePosition.y)){
 			return;
 		}
 		

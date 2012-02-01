@@ -57,6 +57,12 @@ public class EndPointQueue {
 							}
 						}
 					}
+					if( !(n.rootnode instanceof raven.collision.CollisionPoint) && !(ptr.rootnode instanceof raven.collision.CollisionPoint)){
+						if(n.rootnode instanceof raven.collision.EndPoint && ptr.rootnode instanceof raven.collision.EndPoint){
+							((EndPoint)n.rootnode).collisions.add((EndPoint)ptr.rootnode);
+							((EndPoint)ptr.rootnode).collisions.add((EndPoint)n.rootnode);
+						}
+					}
 					if(ptr.rightnode==null){
 						n.parentnode=ptr;
 						ptr.rightnode=n;

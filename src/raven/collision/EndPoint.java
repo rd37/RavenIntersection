@@ -1,9 +1,12 @@
 package raven.collision;
 
+import java.util.LinkedList;
+
 public class EndPoint implements Comparable<Object>{
 	public double x=0;
 	public double y=0;
 	public LineSegment seg;
+	public LinkedList<EndPoint> collisions = new LinkedList<EndPoint>();
 	
 	public EndPoint(){}
 	
